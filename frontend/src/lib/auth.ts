@@ -1,4 +1,4 @@
-import { get_user_account_data } from "@/app/api/backend/user_data/[sub]/route";
+import { get_user_account_data } from "@/lib/get_data_utils";
 import NextAuth from "next-auth";
 import google from "next-auth/providers/google";
 
