@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_JP } from "next/font/google";
 import "./globals.css";
+import AuthSessionProvider from "@/components/auth/sessionProvider";
 
 const ibmplexsansjp = IBM_Plex_Sans_JP({
     weight: "400",
@@ -23,7 +24,9 @@ export default function RootLayout({
             <body
                 className={`${ibmplexsansjp.className} antialiased`}
             >
-                {children}
+                <AuthSessionProvider>
+                    {children}
+                </AuthSessionProvider>
             </body>
         </html>
     );
