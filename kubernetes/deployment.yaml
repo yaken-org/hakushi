@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hakushi-backend
+spec:
+  selector:
+    matchLabels:
+      app: hakushi-backend
+  template:
+    metadata:
+      labels:
+        app: hakushi-backend
+    spec:
+      containers:
+      - name: hakushi-backend
+        image: ghcr.io/yaken-org/hakushi-backend:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hakushi-frontend
+spec:
+  selector:
+    matchLabels:
+      app: hakushi-frontend
+  template:
+    metadata:
+      labels:
+        app: hakushi-frontend
+    spec:
+      containers:
+      - name: hakushi-frontend
+        image: ghcr.io/yaken-org/hakushi-frontend:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
