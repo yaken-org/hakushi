@@ -1,0 +1,22 @@
+version: '3'
+
+silent: true
+
+tasks:
+  default:
+    cmds:
+      - "task -a"
+
+  migrate:local:
+    desc: ローカル環境のDBにマイグレーションを実行します。
+    cmds:
+      - "docker compose up -d db"
+      - "docker run --rm --network host -v ./db/migrations:/migrations migrate/migrate -path /migrations -database 'mysql://root:root@tcp(127.0.0.1:3306)/hakushi' up"
+
+  create-migrate:
+    desc: マイグレーションファイルを作成します。
+    vars:
+      NAME: '{{ default "migrate" .NAME }}'
+    prompt: "ファイル名は {{ .NAME }} でよろしいですか？"
+    cmds:
+      - "docker run -v ./db/migrations:/migrations migrate/migrate create -ext sql -dir /migrations -seq $(date +'%Y%m%d%H%M%S')_{{ .NAME }}"
