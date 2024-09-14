@@ -1,0 +1,11 @@
+server:
+  host: 0.0.0.0
+  port: 8080
+
+database:
+  host: ishikari-prod.database.hakushi-project.yaken.org
+  port: 3306
+  username: hakushi
+  password:
+  database: hakushi
+  timezone: Asia/Tokyo
