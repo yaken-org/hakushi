@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { IBM_Plex_Sans_JP } from "next/font/google";
+import "./globals.css";
+
+const ibmplexsansjp = IBM_Plex_Sans_JP({
+    weight: "400",
+    subsets: ["latin"],
+    display: "swap",
+});
+
+export const metadata: Metadata = {
+    title: "hakushi",
+    description: "hakushiプロジェクトです",
+};
+
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <html lang="ja">
+            <body
+                className={`${ibmplexsansjp.className} antialiased`}
+            >
+                {children}
+            </body>
+        </html>
+    );
+}
