@@ -2,18 +2,33 @@ package main
 
 import (
 	"log/slog"
-	"net/http"
+	"os"
+
+	"github.com/yaken-org/hakushi/internal/config"
+	"github.com/yaken-org/hakushi/internal/database"
+	"github.com/yaken-org/hakushi/internal/server"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to the home page!"))
-	})
+	slog.Info("Starting Hakushi")
+	var e config.Environment
+	if os.Getenv("APP_ENV") == "production" {
+		slog.Info("Environment: Production")
+		e = config.Production()
+	} else {
+		slog.Info("Environment: Development")
+		e = config.Development()
+	}
 
-	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
-	})
+	slog.Debug("Loading configuration")
+	config := config.New(e)
 
-	slog.Info("Server is running on port 8080")
-	http.ListenAndServe(":80", nil)
+	slog.Debug("Initializing database")
+	database.Initialize(config)
+
+	slog.Debug("Initializing server")
+	server.Initialize(config)
+
+	slog.Info("Starting server")
+	server.Get().Start()
 }
