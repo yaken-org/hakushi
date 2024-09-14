@@ -15,7 +15,7 @@ type PostItem struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (p *PostItem) FromRow(row sql.Row) error {
+func (p *PostItem) FromRow(row *sql.Row) error {
 	return row.Scan(
 		&p.ID,
 		&p.PostID,

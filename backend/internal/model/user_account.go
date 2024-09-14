@@ -14,7 +14,7 @@ type UserAccount struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (u *UserAccount) FromRow(row sql.Row) error {
+func (u *UserAccount) FromRow(row *sql.Row) error {
 	return row.Scan(
 		&u.ID,
 		&u.Name,
