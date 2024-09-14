@@ -6,4 +6,3 @@ export default function Home() {
         </main>
     );
 }
-// todo shadcn/uiインストール
