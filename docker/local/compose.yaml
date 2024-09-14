@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: ../../backend
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+
+  db:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hakushi
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+    ports:
+      - "3306:3306"
