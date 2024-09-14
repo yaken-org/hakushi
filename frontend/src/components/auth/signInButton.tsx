@@ -8,6 +8,7 @@ export default function SignInButton() {
     console.log(nowPath);
     const { data: session } = useSession();
     if (session) {
+        console.log(session);
         return (
             <Button onClick={() => signOut()}>SignOut</Button>
         )
