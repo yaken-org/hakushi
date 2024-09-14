@@ -7,6 +7,27 @@ tasks:
     cmds:
       - "task -a"
 
+  up:
+    desc: ローカル開発環境を立ち上げます。
+    cmds:
+      - "docker compose -f ./docker/local/compose.yaml up"
+
+  down:
+    desc: ローカル開発環境を削除します。
+    cmds:
+      - "docker compose -f ./docker/local/compose.yaml down"
+
+  build:
+    desc: コンテナイメージのビルドを実行します。
+    cmds:
+      # - "task build:frontend"
+      - "task build:backend"
+
+  build:backend:
+    desc: バックエンドコンテナイメージのビルドを実行します。
+    cmds:
+      - "docker compose -f ./docker/local/compose.yaml build"
+
   migrate:local:
     desc: ローカル環境のDBにマイグレーションを実行します。
     cmds:
