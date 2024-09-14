@@ -55,6 +55,11 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ghcr.io/yaken-org/hakushi-frontend:latest
+          secrets: |
+            "auth_secret=${{ secrets.AUTH_SECRET }}"
+            "google_client_id=${{ secrets.GOOGLE_CLIENT_ID }}"
+            "google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            "backend_api_endpoint=${{ secrets.BACKEND_API_ENDPOINT }}"
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
