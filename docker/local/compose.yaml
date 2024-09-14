@@ -2,9 +2,11 @@ services:
   app:
     build:
       context: ../../backend
-      dockerfile: ./Dockerfile
+      dockerfile: ../docker/local/backend/Dockerfile
     ports:
       - "8080:8080"
+    volumes:
+      - ../../backend:/app/
 
   db:
     image: mariadb:10.5
@@ -12,6 +14,6 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: hakushi
     volumes:
-      - ./tmp/db:/var/lib/mysql
+      - ../../tmp/db:/var/lib/mysql
     ports:
       - "3306:3306"
