@@ -20,4 +20,4 @@ spec:
     app: hakushi-frontend
   ports:
   - port: 1180
-    targetPort: 80
+    targetPort: 3000
