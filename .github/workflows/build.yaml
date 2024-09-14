@@ -58,3 +58,26 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+  deploy:
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.31.0'
+
+      - name: Prepare kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > kubeconfig
+          mkdir -p ~/.kube
+          mv kubeconfig ~/.kube/config
+
+      - name: Deploy
+        run: |
+          kubectl apply -f ./kubernetes/deployment.yaml
+          kubectl apply -f ./kubernetes/service.yaml
