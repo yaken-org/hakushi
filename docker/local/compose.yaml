@@ -1,10 +1,36 @@
+volumes:
+  node_modules:
+
 services:
+  traefik:
+    image: traefik:v3.0
+    ports:
+      - "80:80"
+      - "8082:8082"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../config/traefik:/etc/traefik
+      - ../../tmp/traefik/logs:/logs
+    environment:
+      TZ: Asia/Tokyo
+    labels:
+      traefik.enable: true
+      traefik.http.routers.dashboard.rule: Host(`traefik.local.yaken.org`)
+      traefik.http.routers.dashboard.entrypoints: http
+      traefik.http.routers.dashboard.service: api@internal
+
   app:
     build:
       context: ../../backend
-      dockerfile: ./Dockerfile
-    ports:
-      - "8080:8080"
+      dockerfile: ../docker/local/backend/Dockerfile
+    volumes:
+      - ../../backend:/app/
+    expose:
+      - "80"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.app.rule: Host(`api.local.hakushi.yaken.org`)
+      traefik.http.routers.app.entrypoints: http
 
   db:
     image: mariadb:10.5
@@ -12,6 +38,20 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: hakushi
     volumes:
-      - ./tmp/db:/var/lib/mysql
+      - ../../tmp/db:/var/lib/mysql
     ports:
       - "3306:3306"
+
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../docker/local/frontend/Dockerfile
+    expose:
+      - "80"
+    volumes:
+      - ../../frontend:/app/
+      - node_modules:/app/node_modules
+    labels:
+      traefik.enable: true
+      traefik.http.routers.frontend.rule: Host(`local.hakushi.yaken.org`)
+      traefik.http.routers.frontend.entrypoints: http

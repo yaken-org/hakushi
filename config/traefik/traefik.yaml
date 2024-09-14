@@ -1,0 +1,29 @@
+api:
+  insecure: false
+  dashboard: true
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    defaultRule: "PathPrefix(`/svc/{{ .Name }}`)"
+    exposedByDefault: false
+
+entryPoints:
+  http:
+    address: :80
+  metrics:
+    address: :8082
+
+metrics:
+  prometheus:
+    entryPoint: metrics
+    addRoutersLabels: true
+
+log:
+  filePath: "/logs/traefik.log"
+  format: json
+  level: INFO
+
+accessLog:
+  filePath: "/logs/access.log"
+  format: json
