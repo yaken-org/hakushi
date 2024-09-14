@@ -20,13 +20,18 @@ tasks:
   build:
     desc: コンテナイメージのビルドを実行します。
     cmds:
-      # - "task build:frontend"
+      - "task build:frontend"
       - "task build:backend"
+
+  build:frontend:
+    desc: バックエンドコンテナイメージのビルドを実行します。
+    cmds:
+      - "docker compose -f ./docker/local/compose.yaml build frontend"
 
   build:backend:
     desc: バックエンドコンテナイメージのビルドを実行します。
     cmds:
-      - "docker compose -f ./docker/local/compose.yaml build"
+      - "docker compose -f ./docker/local/compose.yaml build app"
 
   migrate:local:
     desc: ローカル環境のDBにマイグレーションを実行します。
