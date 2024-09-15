@@ -59,12 +59,14 @@ func CreatePost(c echo.Context) error {
 	}
 
 	// アカウント情報を取得する
-	// userAccount := c.Get("user_account").(*model.UserAccount)
-	userAccount := new(model.UserAccount)
-	userAccount.ID = 1
+	userAccountID := apiPost.UserAccountID
+	account, err := service.FindUserAccountById(userAccountID)
+	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
 
 	// ポストを作成する
-	post, err := service.CreatePost(*userAccount, apiPost.ImageID, apiPost.Title, apiPost.Content)
+	post, err := service.CreatePost(*account, apiPost.ImageID, apiPost.Title, apiPost.Content)
 	if err != nil {
 		return err
 	}
