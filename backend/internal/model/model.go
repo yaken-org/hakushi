@@ -6,8 +6,7 @@ type Model interface {
 	FromRow(row *sql.Row) error
 }
 
-func QueryRow[T Model](db *sql.DB, model T, query string, args ...any) (T, error) {
+func QueryRow[T Model](db *sql.DB, model T, query string, args ...any) error {
 	row := db.QueryRow(query, args...)
-	err := model.FromRow(row)
-	return model, err
+	return model.FromRow(row)
 }
