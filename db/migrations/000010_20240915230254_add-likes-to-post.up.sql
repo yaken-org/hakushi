@@ -1,0 +1,2 @@
+ALTER TABLE `post`
+ADD COLUMN `likes` INT NOT NULL DEFAULT 0 AFTER `content`;

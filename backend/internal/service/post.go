@@ -46,7 +46,12 @@ func FindAPIPostByID(id int64) (*model.APIPost, error) {
 		return nil, err
 	}
 
-	return post.ToAPIPost(annotations), nil
+	tags, err := FindPostRelatedTags(post.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return post.ToAPIPost(annotations, tags), nil
 }
 
 func FindPostsByUserAccountID(userAccountID int64) ([]*model.Post, error) {
@@ -107,4 +112,68 @@ func UpdatePost(id int64, title string, content string) (*model.Post, error) {
 	}
 
 	return FindPostByID(id)
+}
+
+func FindPostRelatedTags(postID int64) ([]*model.Tag, error) {
+	db := database.New()
+
+	res, err := db.Query(`
+		SELECT * FROM tag
+		WHERE id IN (
+			SELECT tag_id FROM post_tag WHERE post_id = ?
+		)
+	`, postID)
+	if err != nil {
+		return nil, err
+	}
+
+	tags := make([]*model.Tag, 0)
+	for res.Next() {
+		tag := new(model.Tag)
+		if err := tag.FromRow(res); err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+
+	return tags, nil
+}
+
+func FindPostRelatedTagsByPostIDs(postIDs []int64) (map[int64][]*model.Tag, error) {
+	// N+1 が起きているが、無視する
+	postIdToTags := make(map[int64][]*model.Tag)
+	for _, postID := range postIDs {
+		tags, err := FindPostRelatedTags(postID)
+		if err != nil {
+			return nil, err
+		}
+		postIdToTags[postID] = tags
+	}
+
+	return postIdToTags, nil
+}
+
+func FindPostsByTag(tag *model.Tag) ([]*model.Post, error) {
+	db := database.New()
+
+	res, err := db.Query(`
+		SELECT * FROM post
+		WHERE id IN (
+			SELECT post_id FROM post_tag WHERE tag_id = ?
+		)
+	`, tag.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	posts := make([]*model.Post, 0)
+	for res.Next() {
+		post := new(model.Post)
+		if err := post.FromRow(res); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
 }
