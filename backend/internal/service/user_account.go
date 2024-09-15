@@ -2,7 +2,6 @@ package service
 
 import (
 	"log/slog"
-	"strconv"
 
 	"github.com/yaken-org/hakushi/internal/database"
 	"github.com/yaken-org/hakushi/internal/model"
@@ -11,7 +10,6 @@ import (
 func FindUserAccountById(id int64) (*model.UserAccount, error) {
 	db := database.New()
 
-	slog.Info("CALL FindUserAccountById")
 	user := new(model.UserAccount)
 	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE id = ?", id); err != nil {
 		slog.Error(err.Error())
@@ -34,12 +32,8 @@ func FindUserAccountByName(name string) (*model.UserAccount, error) {
 
 func FindUserAccountBySub(sub string) (*model.UserAccount, error) {
 	db := database.New()
-	subnumber, err := strconv.ParseInt(sub, 10, 64)
-	if err != nil {
-		return nil, err
-	}
 	user := new(model.UserAccount)
-	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE sub = ?", subnumber); err != nil {
+	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE sub = ?", sub); err != nil {
 		return nil, err
 	}
 

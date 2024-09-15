@@ -48,7 +48,7 @@ func GetUserAccountBySub(c echo.Context) error {
 
 	account, err := service.FindUserAccountBySub(sub)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	return c.JSON(http.StatusOK, account)
