@@ -1,22 +1,18 @@
-import { Account, Profile, User, type DefaultSession } from "next-auth";
-import { AdapterUser } from "next-auth/adapters";
+import { type DefaultSession } from "next-auth";
+import { UserAccount } from "./db/user";
 
 declare module "next-auth" {
     interface Session {
         user: {
-            account,
-            profile,
+            providerAccountId: string, // providerAccountId(sub): google unique user id
+            data: UserAccount | null, // database user data
             trigger,
-            data,
         } & DefaultSession["user"];
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
-        account: Account | null;
-        user: User | AdapterUser,
-        profile: Profile | undefined,
         trigger: "signIn" | "signUp" | "update" | undefined,
     }
 }
