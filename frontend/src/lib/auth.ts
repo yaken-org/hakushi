@@ -15,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         maxAge: 7 * 24 * 60 * 60,
         updateAge: 24 * 60 * 60,
     },
-
+    trustHost: true,
     callbacks: {
         jwt: async ({ token, user, account, profile, trigger, }) => {
             token.account = account ? account : token.account;
