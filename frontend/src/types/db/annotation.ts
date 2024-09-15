@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const AnnotationSchema = z.object({
-    id: z.string(),
-    post_id: z.string(),
-    product_id: z.string(),
+    id: z.number(),
+    post_id: z.number(),
+    product_id: z.number(),
     display_name: z.string(),
     x: z.number(),
     y: z.number(),

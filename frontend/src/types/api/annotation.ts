@@ -3,7 +3,7 @@ import { ProductSchema } from "../db/annotation";
 import { PostSchema } from "../db/post";
 
 const API_AnnotationSchema = z.object({
-    id: z.string(),
+    id: z.number(),
 
 
     display_name: z.string(),
