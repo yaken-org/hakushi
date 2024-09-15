@@ -10,6 +10,7 @@ tasks:
   up:
     desc: ローカル開発環境を立ち上げます。
     cmds:
+      - "task migrate:local"
       - "docker compose -f ./docker/local/compose.yaml up"
 
   down:
@@ -36,8 +37,9 @@ tasks:
   migrate:local:
     desc: ローカル環境のDBにマイグレーションを実行します。
     cmds:
-      - "docker compose up -d db"
-      - "docker run --rm --network host -v ./db/migrations:/migrations migrate/migrate -path /migrations -database 'mysql://root:root@tcp(127.0.0.1:3306)/hakushi' up"
+      - "docker compose -f ./docker/local/compose.yaml up -d db"
+      - "sleep 3"
+      - "docker run --rm --network host -v ./db/migrations:/migrations migrate/migrate -path /migrations -database 'mysql://root:root@tcp(127.0.0.1:3306)/hakushi' -verbose up"
 
   create-migrate:
     desc: マイグレーションファイルを作成します。

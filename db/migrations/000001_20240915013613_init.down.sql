@@ -1,0 +1,9 @@
+DELETE TABLE IF EXISTS `user_account`;
+
+DELETE TABLE IF EXISTS `auth_user`;
+
+DELETE TABLE IF EXISTS `post`;
+
+DELETE TABLE IF EXISTS `post_item`;
+
+DELETE TABLE IF EXISTS `product`;
