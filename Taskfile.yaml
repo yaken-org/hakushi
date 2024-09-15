@@ -41,6 +41,11 @@ tasks:
       - "sleep 3"
       - "docker run --rm --network host -v ./db/migrations:/migrations migrate/migrate -path /migrations -database 'mysql://root:root@tcp(127.0.0.1:3306)/hakushi' -verbose up"
 
+  migrate:production:
+    desc: ローカル環境のDBにマイグレーションを実行します。
+    prompt: "本番環境のDBにマイグレーションを実行します。本当によろしいですか？"
+    cmds:
+      - sh script/migrate-production.sh
   create-migrate:
     desc: マイグレーションファイルを作成します。
     vars:
