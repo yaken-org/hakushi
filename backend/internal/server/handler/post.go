@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/yaken-org/hakushi/internal/model"
 	"github.com/yaken-org/hakushi/internal/service"
@@ -15,7 +18,16 @@ func GetAllPosts(c echo.Context) error {
 }
 
 func GetPost(c echo.Context) error {
-	return nil
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	post, err := service.FindPostByID(id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(200, post)
 }
 
 func CreatePost(c echo.Context) error {
