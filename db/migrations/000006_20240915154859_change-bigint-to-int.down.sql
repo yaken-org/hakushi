@@ -1,0 +1,23 @@
+ALTER TABLE `auth_user`
+MODIFY COLUMN `id` bigint NOT NULL AUTO_INCREMENT,
+MODIFY COLUMN `user_account_id` bigint NOT NULL;
+
+ALTER TABLE `post`
+MODIFY COLUMN `id` bigint NOT NULL AUTO_INCREMENT,
+MODIFY COLUMN `user_account_id` bigint NOT NULL,
+MODIFY COLUMN `image_id` bigint NOT NULL;
+
+ALTER TABLE `product`
+MODIFY COLUMN `id` bigint NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `annotation`
+MODIFY COLUMN `id` bigint NOT NULL AUTO_INCREMENT,
+MODIFY COLUMN `post_id` bigint NOT NULL,
+MODIFY COLUMN `product_id` bigint NOT NULL;
+
+ALTER TABLE `tag`
+MODIFY COLUMN `id` bigint NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `post_tag`
+MODIFY COLUMN `post_id` bigint NOT NULL,
+MODIFY COLUMN `tag_id` bigint NOT NULL;
