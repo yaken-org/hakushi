@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/yaken-org/hakushi/internal/model"
 	"github.com/yaken-org/hakushi/internal/service"
 )
 
@@ -33,4 +34,18 @@ func GetTaggedPosts(c echo.Context) error {
 	}
 
 	return c.JSON(200, posts)
+}
+
+func CreateTag(c echo.Context) error {
+	tag := new(model.Tag)
+	if err := c.Bind(tag); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	tag, err := service.CreateTag(tag.Name)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	return c.JSON(http.StatusOK, tag)
 }
