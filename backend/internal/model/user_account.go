@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -14,7 +13,7 @@ type UserAccount struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (u *UserAccount) FromRow(row *sql.Row) error {
+func (u *UserAccount) FromRow(row Scannable) error {
 	return row.Scan(
 		&u.ID,
 		&u.Name,

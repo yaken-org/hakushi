@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -15,7 +14,7 @@ type Product struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (p *Product) FromRow(row *sql.Row) error {
+func (p *Product) FromRow(row Scannable) error {
 	return row.Scan(
 		&p.ID,
 		&p.Name,
