@@ -21,6 +21,17 @@ func FindUserAccountById(id int64) (*model.UserAccount, error) {
 	return user, nil
 }
 
+func FindUserAccountByName(name string) (*model.UserAccount, error) {
+	db := database.New()
+
+	user := new(model.UserAccount)
+	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE name = ?", name); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func FindUserAccountBySub(sub string) (*model.UserAccount, error) {
 	db := database.New()
 	subnumber, err := strconv.ParseInt(sub, 10, 64)
