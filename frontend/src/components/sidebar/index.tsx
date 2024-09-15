@@ -10,46 +10,56 @@ export default async function SideBar() {
     const session = await auth();
 
     return (
-        <div className="hidden md:flex flex-col border-r">
-            <div className="flex items-center p-4 gap-4">
-                <Link href="#" className="text-2xl font-bold">
-                    hakushi
-                </Link>
-                <Button variant="ghost" size="icon" className="ml-auto rounded-full">
-                    <Settings className="w-4 h-4" />
-                    <span className="sr-only">Settings</span>
-                </Button>
-            </div>
-            <nav className="flex-1 h-full flex flex-col justify-between">
-                <div className="flex flex-col gap-0.5">
-                    <Link href="/" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
-                        <HomeIcon className="w-5 h-5 text-2xl" />
-                        Home
+        <div className="hidden h-full md:block">
+            <div className="sticky h-full max-h-screen md:flex flex-col border-r">
+                <div className="flex items-center p-4 gap-4">
+                    <Link href="/" className="text-2xl font-bold">
+                        hakushi
                     </Link>
-                    <Link href="/search" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
-                    <SearchIcon className="w-4 h-4" />
-                        Search
-                    </Link>
-                    {! session?.user.providerAccountId && (
-                        <Link href={`/${session?.user.providerAccountId}`} className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
-                            <User className="w-5 h-5 text-2xl" />
-                            Profile
+                    <Button variant="ghost" size="icon" className="ml-auto rounded-full">
+                        <Settings className="w-4 h-4" />
+                        <span className="sr-only">Settings</span>
+                    </Button>
+                </div>
+                <nav className="flex-1 h-full flex flex-col justify-between">
+                    <div className="flex flex-col gap-0.5">
+                        <Link href="/" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
+                            <HomeIcon className="w-5 h-5 text-2xl" />
+                            Home
                         </Link>
-                    )}
-                </div>
-                <div className="flex p-4 gap-2 flex-col items-center justify-center w-full">
-                    {session?.user.data ? <>
-                        <Button className="w-full">
-                            投稿する
-                        </Button>
-                        <div className="flex flex-row items-center justify-start">
-                            <Image src={session.user.data.icon_url} width="36" height="36" alt={`${session.user.data.display_name}'s icon`} />
-                        </div>
-                    </> : (
-                        <SignInButton className="w-full" />
-                    )}
-                </div>
-            </nav>
+                        <Link href="/search" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
+                        <SearchIcon className="w-4 h-4" />
+                            Search
+                        </Link>
+                        {! session?.user.providerAccountId && (
+                            <Link href={`/${session?.user.providerAccountId}`} className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
+                                <User className="w-5 h-5 text-2xl" />
+                                Profile
+                            </Link>
+                        )}
+                    </div>
+                    <div className="flex p-4 gap-2 flex-col items-center justify-center w-full">
+                        {session?.user.data ? <>
+                            <Link href="/post/create" className="w-full">
+                                <Button className="w-full">
+                                    投稿する
+                                </Button>
+                            </Link>
+                            <div className="flex flex-row items-center justify-start">
+                                <Image src={session.user.data.icon_url} width="36" height="36" alt={`${session.user.data.display_name}'s icon`} />
+                            </div>
+                        </> : session ? (
+                            <Link href="/register" className="w-full">
+                                <Button className="w-full">
+                                    プロフィールを作成
+                                </Button>
+                            </Link>
+                        ) : (
+                            <SignInButton className="w-full" />
+                        )}
+                    </div>
+                </nav>
+            </div>
         </div>
     )
 }
