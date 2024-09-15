@@ -25,6 +25,31 @@ func FindAllPosts() ([]*model.Post, error) {
 	return posts, nil
 }
 
+func FindPostsOrderByLikes() ([]*model.Post, error) {
+	db := database.New()
+
+	res, err := db.Query(`
+		SELECT *
+		FROM post
+		WHERE likes > 0
+		ORDER BY likes DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+
+	posts := make([]*model.Post, 0)
+	for res.Next() {
+		post := new(model.Post)
+		if err := post.FromRow(res); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func FindPostByID(id int64) (*model.Post, error) {
 	db := database.New()
 
@@ -176,4 +201,20 @@ func FindPostsByTag(tag *model.Tag) ([]*model.Post, error) {
 	}
 
 	return posts, nil
+}
+
+func IncreamentPostLikeCount(postID int64) (int, error) {
+	db := database.New()
+
+	_, err := db.Exec("UPDATE post SET likes = likes + 1 WHERE id = ?", postID)
+	if err != nil {
+		return 0, err
+	}
+
+	post, err := FindPostByID(postID)
+	if err != nil {
+		return 0, err
+	}
+
+	return post.Likes, nil
 }
