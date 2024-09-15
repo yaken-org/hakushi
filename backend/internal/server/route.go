@@ -21,4 +21,6 @@ func (s *Server) configureRoute() {
 	api.GET("/tag", handler.GetAllTags)               // タグ一覧取得
 	api.POST("/tag", handler.CreateTag)               // タグ作成
 	api.GET("/tag/:id/posts", handler.GetTaggedPosts) // タグがついた投稿一覧取得
+
+	api.GET("/ranking", handler.GetRanking) // ランキング取得
 }
