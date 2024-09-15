@@ -1,100 +1,59 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import React from "react"
+import { Settings, User } from "lucide-react"
+import { auth } from "@/lib/auth";
+import SignInButton from "../auth/signInButton";
+import Image from "next/image";
 
 export default async function SideBar() {
+    const session = await auth();
+
     return (
         <div className="hidden md:flex flex-col border-r">
             <div className="flex items-center p-4 gap-4">
                 <Link href="#" className="text-2xl font-bold">
-                    shadcn
+                    hakushi
                 </Link>
                 <Button variant="ghost" size="icon" className="ml-auto rounded-full">
-                    <SearchIcon className="w-4 h-4" />
-                    <span className="sr-only">Search</span>
-                </Button>
-                <Button variant="ghost" size="icon">
-                    <BellIcon className="w-4 h-4" />
-                    <span className="sr-only">Notifications</span>
-                </Button>
-                <Button variant="ghost" size="icon">
-                    <MailIcon className="w-4 h-4" />
-                    <span className="sr-only">Messages</span>
+                    <Settings className="w-4 h-4" />
+                    <span className="sr-only">Settings</span>
                 </Button>
             </div>
-            <nav className="flex-1">
+            <nav className="flex-1 h-full flex flex-col justify-between">
                 <div className="flex flex-col gap-0.5">
-                    <Link href="#" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
+                    <Link href="/" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
                         <HomeIcon className="w-5 h-5 text-2xl" />
                         Home
                     </Link>
-                    <Link href="#" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
-                        <HashIcon className="w-5 h-5 text-2xl" />
-                        Explore
+                    <Link href="/search" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
+                    <SearchIcon className="w-4 h-4" />
+                        Search
                     </Link>
-                    <Link href="#" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
-                        <BellIcon className="w-5 h-5 text-2xl" />
-                        Notifications
-                    </Link>
-                    <Link href="#" className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
-                        <MailIcon className="w-5 h-5 text-2xl" />
-                        Messages
-                    </Link>
+                    {! session?.user.providerAccountId && (
+                        <Link href={`/${session?.user.providerAccountId}`} className="flex items-center gap-4 p-4 text-lg font-semibold" prefetch={false}>
+                            <User className="w-5 h-5 text-2xl" />
+                            Profile
+                        </Link>
+                    )}
                 </div>
-                <Button size="lg" className="mx-4 my-8 justify-start" style={{}}>
-                    Upgrade to Pro
-                </Button>
-                <div className="flex items-center justify-center w-full p-4">
-                    <Button variant="outline" className="w-full">
-                        Tweet
-                    </Button>
+                <div className="flex p-4 gap-2 flex-col items-center justify-center w-full">
+                    {session?.user.data ? <>
+                        <Button className="w-full">
+                            投稿する
+                        </Button>
+                        <div className="flex flex-row items-center justify-start">
+                            <Image src={session.user.data.icon_url} width="36" height="36" alt={`${session.user.data.display_name}'s icon`} />
+                        </div>
+                    </> : (
+                        <SignInButton className="w-full" />
+                    )}
                 </div>
             </nav>
         </div>
     )
 }
 
-function BellIcon(props: React.SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-        </svg>
-    )
-}
-
-function HashIcon(props: React.SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <line x1="4" x2="20" y1="9" y2="9" />
-            <line x1="4" x2="20" y1="15" y2="15" />
-            <line x1="10" x2="8" y1="3" y2="21" />
-            <line x1="16" x2="14" y1="3" y2="21" />
-        </svg>
-    )
-}
 
 function HomeIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -115,28 +74,6 @@ function HomeIcon(props: React.SVGProps<SVGSVGElement>) {
         </svg>
     )
 }
-
-
-function MailIcon(props: React.SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <rect width="20" height="16" x="2" y="4" rx="2" />
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-        </svg>
-    )
-}
-
 
 function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
