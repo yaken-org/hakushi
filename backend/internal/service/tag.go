@@ -66,16 +66,30 @@ func CreateTagAndPostTagMapping(postID int64, tags []*model.Tag) ([]*model.Tag, 
 	if err != nil {
 		return nil, err
 	}
+	allTagNames := make([]string, len(allTags))
+	for i, tag := range allTags {
+		allTagNames[i] = tag.Name
+	}
+	nameToTag := make(map[string]*model.Tag)
+	for _, tag := range allTags {
+		nameToTag[tag.Name] = tag
+	}
+
 	relatedTags, err := FindPostRelatedTags(postID)
 	if err != nil {
 		return nil, err
 	}
+	relatedTagNames := make([]string, len(relatedTags))
+	for i, tag := range relatedTags {
+		relatedTagNames[i] = tag.Name
+	}
 
 	includeTags := make([]*model.Tag, 0)
 	for _, tag := range tags {
+		t := nameToTag[tag.Name]
+
 		// タグが存在しない場合は作成
-		t := tag
-		if !slices.Contains(allTags, tag) {
+		if !slices.Contains(allTagNames, tag.Name) {
 			t, err = CreateTag(tag.Name)
 			if err != nil {
 				return nil, err
@@ -83,7 +97,7 @@ func CreateTagAndPostTagMapping(postID int64, tags []*model.Tag) ([]*model.Tag, 
 		}
 
 		// タグとポストのマッピングを作成
-		if !slices.Contains(relatedTags, t) {
+		if !slices.Contains(relatedTagNames, t.Name) {
 			_, err := CreatePostTag(postID, t.ID)
 			if err != nil {
 				return nil, err
