@@ -1,9 +1,9 @@
 package server
 
-import "github.com/yaken-org/hakushi/internal/server/routes"
+import "github.com/yaken-org/hakushi/internal/server/handler"
 
 func (s *Server) configureRoute() {
 	e := s.Engine
 
-	e.GET("/health", routes.Health)
+	e.GET("/health", handler.Health)
 }
