@@ -121,3 +121,17 @@ func GetUserPosts(c echo.Context) error {
 
 	return c.JSON(200, apiPosts)
 }
+
+func GetPostTags(c echo.Context) error {
+	postID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	tags, err := service.FindPostRelatedTags(postID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(200, tags)
+}
