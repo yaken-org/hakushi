@@ -11,7 +11,6 @@ export default function SignInButton({
 }>) {
     const nowPath = usePathname();
     const { data: session } = useSession();
-    console.log(session);
     if (session) {
         return (
             <Button variant="outline" className={cn(className)} onClick={() => signOut()}>ログアウト</Button>
