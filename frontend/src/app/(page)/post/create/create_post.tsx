@@ -1,16 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trash, Upload } from 'lucide-react'
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DrawerDialog } from './annotation_dialog';
+import { useRouter } from 'next/navigation';
 
 
 export default function CreaetePost() {
-    const [image, setImage] = useState<string | null>(null)
+    const [formData, setFormData] = useState({
+        title: '',
+        content: '',
+    });
+    const [rawImage, setRawImage] = useState<File | null>(null);
+    const [image, setImage] = useState<string | null>(null);
     const [annotationOpen, setAnnotationOpen] = useState(false);
     const [annotations, setAnnotations] = useState<{
         x: number;
@@ -21,9 +27,11 @@ export default function CreaetePost() {
         tag: string;
         date: string;
     }[]>([])
+    const router = useRouter();
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
+        setRawImage(file as File)
         if (file) {
             const reader = new FileReader()
             reader.onloadend = () => {
@@ -35,16 +43,42 @@ export default function CreaetePost() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const formData = new FormData(event.currentTarget)
+        if (!rawImage) {
+            return alert('画像を選択してください')
+        }
+
+        const uint8Array = Array.from(new Uint8Array(await rawImage.arrayBuffer()));
+        let encodedStr = '';
+        for (let i = 0; i < uint8Array.length; i += 1024) {
+            encodedStr += String.fromCharCode.apply(null, uint8Array.slice(i, i + 1024));
+        }
+        const base64Str = `data:${rawImage.type};base64,` + btoa(encodedStr);
 
         const body = {
-            title: formData.get('title'),
-            content: formData.get('content'),
-            tags: tags.map(tag => tag.tag),
-            image: formData.get('image')
+            image: base64Str,
+            title: formData.title,
+            content: formData.content,
+            tags: tags.map(tag => tag.tag).filter(tag => tag !== ''),
+            annotations,
         }
 
         console.log(body)
+
+        const response = await fetch('/api/backend/post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        })
+
+        if (response.ok) {
+            alert('投稿しました！')
+            router.push('/')
+        } else {
+            alert('投稿に失敗しました')
+        }
+
     }
 
     return (
@@ -104,6 +138,8 @@ export default function CreaetePost() {
                                 id="title"
                                 name='title'
                                 placeholder="タイトル"
+                                value={formData.title}
+                                onChange={(event) => setFormData({ ...formData, title: event.target.value })}
                             />
                         </div>
                         <div className="flex flex-col space-y-1.5">
@@ -113,6 +149,8 @@ export default function CreaetePost() {
                                 name='content'
                                 placeholder="本文"
                                 rows={6}
+                                value={formData.content}
+                                onChange={(event) => setFormData({ ...formData, content: event.target.value })}
                             />
                         </div>
                         

@@ -14,7 +14,10 @@ const nextConfig = {
                 port: "",
             }
         ]
-    }
+    },
+    images: {
+        unoptimized: true,
+    },
 };
 
 export default nextConfig;

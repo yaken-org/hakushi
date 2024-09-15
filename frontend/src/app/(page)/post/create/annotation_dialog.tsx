@@ -121,12 +121,12 @@ function AnnotationForm({
         setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     const [selectedAnnotation, setSelectedAnnotation] = React.useState<{ x: number, y: number } | null>(null)
+    const [title, setTitle] = React.useState("");
 
     const image_click_handler = (e: React.MouseEvent<HTMLImageElement>) => {
         const rect = e.currentTarget.getBoundingClientRect()
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
-        console.log(`x: ${x}, y: ${y}`)
 
         const percentage_x = parseInt(x / rect.width * 1000 + "")
         const percentage_y = parseInt(y / rect.height * 1000 + "")
@@ -141,23 +141,28 @@ function AnnotationForm({
                 <img src={image} alt="アップロード画像" className="aspect-square object-cover rounded-md" onClick={image_click_handler} />
                 <div className="absolute top-0 left-0 w-full h-full" onClick={image_click_handler}>
                     {/* Annotation */}
-                    {annotations && annotations.map((annotation, index) => (
-                        <div key={index} className="absolute" style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}>
-                            <div className="absolute w-8 h-8 bg-gray-800 rounded-full" />
-                            <div className="absolute w-8 h-8 bg-white rounded-full" />
+                    {annotations && annotations.map((annotation) => (
+                        <div key={`${annotation.x},${annotation.y}`} className="absolute" style={{ left: `${annotation.x / 10}%`, top: `${annotation.y / 10}%` }}>
+                            <div className={cn("absolute w-2 h-2 rounded-full", 
+                                selectedAnnotation?.x === annotation.x && selectedAnnotation?.y === annotation.y ? "bg-red-500" : "bg-blue-500"
+                            )} onClick={() => setSelectedAnnotation(annotation)} />
                         </div>
                     ))}
                 </div>
             </div>
 
             <div>
-                <Select>
+                <Select onValueChange={(value) => {
+                    const [x, y] = value.split(",").map(v => parseInt(v))
+                    setSelectedAnnotation({ x, y })
+                    setTitle(annotations.find(annotation => annotation.x === x && annotation.y === y)?.text || "")
+                }}>
                     <SelectTrigger className="w-[280px]">
                         <SelectValue placeholder="追加した点を選択" />
                     </SelectTrigger>
                     <SelectContent>
                         {annotations && annotations.map((annotation) => (
-                            <SelectItem key={`${annotation.x},${annotation.y}`} onClick={() => setSelectedAnnotation(annotation)} value={`${annotation.x},${annotation.y}`}>
+                            <SelectItem key={`${annotation.x},${annotation.y}`} value={`${annotation.x},${annotation.y}`}>
                                 {annotation.x}, {annotation.y}
                             </SelectItem>
                         ))}
@@ -166,7 +171,8 @@ function AnnotationForm({
             </div>
             <div>
                 <label htmlFor="title" className="block">Title</label>
-                <Input type="text" id="title" name="title" className="w-full" onChange={e => {
+                <Input type="text" id="title" name="title" className="w-full" value={title} onChange={e => {
+                    setTitle(e.target.value)
                     if (selectedAnnotation) {
                         setAnnotations(annotations.map(annotation => {
                             if (annotation.x === selectedAnnotation.x && annotation.y === selectedAnnotation.y) {
