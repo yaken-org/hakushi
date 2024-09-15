@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `post` (
     `id` bigint NOT NULL AUTO_INCREMENT,
 
     `user_account_id` bigint NOT NULL,
+    `image_id` bigint NOT NULL,
 
     `title` varchar(255) NOT NULL,
     `content` text NOT NULL,
