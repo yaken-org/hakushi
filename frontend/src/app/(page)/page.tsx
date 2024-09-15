@@ -1,6 +1,10 @@
 import PostSimpleCardList from "@/components/post/post_simple_list";
+import { auth } from "@/lib/auth";
 
 export default async function Home() {
+    const session = await auth();
+    console.log(session);
+
     return (
         <div className="pt-4">
             <h1 className="text-4xl font-bold">Timeline</h1>

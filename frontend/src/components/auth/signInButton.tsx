@@ -1,5 +1,4 @@
 "use client";
-import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -9,7 +8,6 @@ export default function SignInButton({
 }: Readonly<{
     className?: string;
 }>) {
-    const nowPath = usePathname();
     const { data: session } = useSession();
     if (session) {
         return (
@@ -17,6 +15,6 @@ export default function SignInButton({
         )
     }
     return (
-        <Button className={cn(className)} onClick={() => signIn("google", { redirectTo: nowPath})}>Googleでログイン</Button>
+        <Button className={cn(className)} onClick={() => signIn("google", { callbackUrl: "/register" })}>Googleでログイン</Button>
     )
 }

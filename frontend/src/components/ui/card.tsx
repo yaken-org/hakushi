@@ -1,7 +1,6 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import Image from "next/image"
 
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -24,27 +23,23 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-row justify-start items-center gap-2 px-4 border-b border-gray-200", className)}
+    className={cn("flex flex-col space-y-1.5 p-6", className)}
     {...props}
   />
 ))
 CardHeader.displayName = "CardHeader"
 
-const CardIcon = React.forwardRef<
-  HTMLImageElement,
-  React.ImgHTMLAttributes<HTMLImageElement>
->(({ className, alt, src, width, height, ...props }, ref) => (
-  <Image
+const CardTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h3
     ref={ref}
-    className={cn("rounded-full", className)}
-    src={src ?? ""}
-    width={width as number ?? 40}
-    height={height as number ?? 40}
-    alt={alt ?? ""}
+    className={cn("font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ))
-CardIcon.displayName = "CardIcon"
+CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -52,27 +47,11 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("font-semibold leading-none", className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ))
 CardDescription.displayName = "CardDescription"
-
-const CardImage = React.forwardRef <
-  HTMLImageElement,
-  React.ImgHTMLAttributes<HTMLImageElement>
->(({ className, alt, src, width, height, ...props }, ref) => (
-  <Image
-    ref={ref}
-    className={cn("my-auto w-full rounded-b-xl object-cover", className)}
-    src={src ?? ""}
-    width={width as number ?? 500}
-    height={height as number ?? 250}
-    alt={alt ?? ""}
-    {...props}
-    />
-))
-CardImage.displayName = "CardImage"
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
@@ -94,4 +73,4 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardIcon, CardDescription, CardImage, CardContent }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }

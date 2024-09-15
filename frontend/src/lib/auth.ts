@@ -1,4 +1,4 @@
-import { get_user_account_data } from "@/lib/get_data_utils";
+import { get_account_data_by_sub } from "@/lib/get_data_utils";
 import NextAuth from "next-auth";
 import google from "next-auth/providers/google";
 
@@ -27,13 +27,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
         session: async ({ session, token }) => {
             const providerAccountId = (token.user as { providerAccountId: string }).providerAccountId;
-            const user_account_data = await get_user_account_data(providerAccountId);
+            const user_account_data = await get_account_data_by_sub(providerAccountId);
+            console.log(user_account_data);
 
             session.user = {
                 ...session.user,
                 providerAccountId,
                 trigger: token.trigger,
-                data: user_account_data.is_success ? user_account_data.data : null,
+                data: user_account_data.status_code === 200 ? user_account_data.data : null,
             };
 
             return session;
