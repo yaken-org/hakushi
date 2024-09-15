@@ -16,4 +16,7 @@ func (s *Server) configureRoute() {
 	api.POST("/post", handler.CreatePost)
 	api.GET("/post/:id", handler.GetPost)
 	api.GET("/post/:id/tags", handler.GetPostTags)
+
+	api.GET("/tag", handler.GetAllTags)
+	api.GET("/tag/:id/posts", handler.GetTaggedPosts)
 }

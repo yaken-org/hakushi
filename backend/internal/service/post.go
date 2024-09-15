@@ -133,3 +133,28 @@ func FindPostRelatedTags(postID int64) ([]*model.Tag, error) {
 
 	return tags, nil
 }
+
+func FindPostsByTag(tag *model.Tag) ([]*model.Post, error) {
+	db := database.New()
+
+	res, err := db.Query(`
+		SELECT * FROM post
+		WHERE id IN (
+			SELECT post_id FROM post_tag WHERE tag_id = ?
+		)
+	`, tag.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	posts := make([]*model.Post, 0)
+	for res.Next() {
+		post := new(model.Post)
+		if err := post.FromRow(res); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
