@@ -8,9 +8,10 @@ func (s *Server) configureRoute() {
 	e.GET("/health", handler.Health)
 
 	api := e.Group("/api")
-	api.POST("/account", handler.CreateUserAccount)     // アカウント作成
-	api.GET("/account/:id", handler.GetUserAcocunt)     // アカウントの詳細取得
-	api.GET("/account/:id/posts", handler.GetUserPosts) // アカウントの投稿一覧取得
+	api.POST("/account", handler.CreateUserAccount)          // アカウント作成
+	api.GET("/account/:id", handler.GetUserAcocunt)          // アカウントの詳細取得
+	api.GET("/account/:id/posts", handler.GetUserPosts)      // アカウントの投稿一覧取得
+	api.GET("/account/sub/:id", handler.GetUserAccountBySub) // フォローしているかどうか
 
 	api.GET("/post", handler.GetAllPosts)              // 投稿一覧取得
 	api.POST("/post", handler.CreatePost)              // 投稿作成
