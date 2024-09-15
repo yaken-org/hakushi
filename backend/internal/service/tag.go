@@ -8,7 +8,7 @@ import (
 func FindTagByID(id int64) (*model.Tag, error) {
 	db := database.New()
 	tag := new(model.Tag)
-	if err := model.QueryRow(db.DB, tag, "SELECT * FROM tags WHERE id = ?", id); err != nil {
+	if err := model.QueryRow(db.DB, tag, "SELECT * FROM tag WHERE id = ?", id); err != nil {
 		return nil, err
 	}
 	return tag, nil
@@ -16,7 +16,7 @@ func FindTagByID(id int64) (*model.Tag, error) {
 
 func FindAllTags() ([]*model.Tag, error) {
 	db := database.New()
-	rows, err := db.Query("SELECT * FROM tags")
+	rows, err := db.Query("SELECT * FROM tag")
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func FindAllTags() ([]*model.Tag, error) {
 func CreateTag(name string) (*model.Tag, error) {
 	db := database.New()
 	res, err := db.Exec(`
-		INSERT INTO tags (name) VALUES(?)
+		INSERT INTO tag (name) VALUES(?)
 	`, name)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func CreateTag(name string) (*model.Tag, error) {
 
 func DeleteTag(id int64) error {
 	db := database.New()
-	_, err := db.Exec("DELETE FROM tags WHERE id = ?", id)
+	_, err := db.Exec("DELETE FROM tag WHERE id = ?", id)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func DeleteTag(id int64) error {
 
 func UpdateTag(id int64, name string) (*model.Tag, error) {
 	db := database.New()
-	_, err := db.Exec("UPDATE tags SET name = ? WHERE id = ?", name, id)
+	_, err := db.Exec("UPDATE tag SET name = ? WHERE id = ?", name, id)
 	if err != nil {
 		return nil, err
 	}

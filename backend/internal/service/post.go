@@ -113,7 +113,7 @@ func FindPostRelatedTags(postID int64) ([]*model.Tag, error) {
 	db := database.New()
 
 	res, err := db.Query(`
-		SELECT * FROM tags
+		SELECT * FROM tag
 		WHERE id IN (
 			SELECT tag_id FROM post_tag WHERE post_id = ?
 		)
