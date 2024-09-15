@@ -49,6 +49,26 @@ func FindAPIPostByID(id int64) (*model.APIPost, error) {
 	return post.ToAPIPost(annotations), nil
 }
 
+func FindPostsByUserAccountID(userAccountID int64) ([]*model.Post, error) {
+	db := database.New()
+
+	res, err := db.Query("SELECT * FROM post WHERE user_account_id = ?", userAccountID)
+	if err != nil {
+		return nil, err
+	}
+
+	posts := make([]*model.Post, 0)
+	for res.Next() {
+		post := new(model.Post)
+		if err := post.FromRow(res); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func CreatePost(userAccount model.UserAccount, imageId int64, title string, content string) (*model.Post, error) {
 	db := database.New()
 

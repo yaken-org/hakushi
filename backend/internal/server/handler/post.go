@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -52,9 +53,11 @@ func GetPost(c echo.Context) error {
 	return c.JSON(200, apiPost)
 }
 
+// CreatePost はポストを作成するハンドラ
 func CreatePost(c echo.Context) error {
 	apiPost := new(model.APIPost)
 	if err := c.Bind(apiPost); err != nil {
+		slog.Error(err.Error())
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -72,11 +75,8 @@ func CreatePost(c echo.Context) error {
 	}
 
 	// ポストに紐づけられた仮のアノテーションを登録する
-	annotations := apiPost.Annotations
-	if annotations == nil {
-		annotations = []*model.Annotation{}
-	}
-	for _, annotation := range annotations {
+	annotations := []*model.Annotation{}
+	for _, annotation := range apiPost.Annotations {
 		annotation, err = service.CreateAnnotation(post, annotation.ProductID, annotation.DisplayName, annotation.X, annotation.Y)
 		if err != nil {
 			continue
@@ -86,4 +86,38 @@ func CreatePost(c echo.Context) error {
 
 	// API で通信する形のポストに整形して返す
 	return c.JSON(200, post.ToAPIPost(annotations))
+}
+
+// GetUserPosts はユーザのポストを取得するハンドラ
+func GetUserPosts(c echo.Context) error {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	// ユーザのポストを取得する
+	posts, err := service.FindPostsByUserAccountID(id)
+	if err != nil {
+		return err
+	}
+
+	// ポストからIDを取得する
+	postIDs := make([]int64, len(posts))
+	for i, post := range posts {
+		postIDs[i] = post.ID
+	}
+	// ポストからアノテーションを取得する
+	postIdToAnnotations, err := service.FindAnnotationsByPostIDs(postIDs)
+	if err != nil {
+		return err
+	}
+
+	// API で通信する形のポストに整形して返す
+	apiPosts := []*model.APIPost{}
+	for _, post := range posts {
+		apiPost := post.ToAPIPost(postIdToAnnotations[post.ID])
+		apiPosts = append(apiPosts, apiPost)
+	}
+
+	return c.JSON(200, apiPosts)
 }

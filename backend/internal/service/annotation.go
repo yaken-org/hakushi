@@ -40,6 +40,10 @@ func FindAnnotationsByPostID(postID int64) ([]*model.Annotation, error) {
 func FindAnnotationsByPostIDs(postIDs []int64) (map[int64][]*model.Annotation, error) {
 	db := database.New()
 
+	if len(postIDs) == 0 {
+		return map[int64][]*model.Annotation{}, nil
+	}
+
 	query := "SELECT * FROM annotation WHERE post_id IN ("
 	for i := range postIDs {
 		if i > 0 {
