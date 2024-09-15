@@ -1,0 +1,69 @@
+name: Test Build Container Image
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions: write-all
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./docker/production/backend/Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: ghcr.io/yaken-org/hakushi-backend:latest
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./docker/production/frontend/Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: ghcr.io/yaken-org/hakushi-frontend:latest
+          secrets: |
+            "auth_secret=${{ secrets.AUTH_SECRET }}"
+            "google_client_id=${{ secrets.GOOGLE_CLIENT_ID }}"
+            "google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            "backend_api_endpoint=${{ secrets.BACKEND_API_ENDPOINT }}"
+            "r2_access_key_id=${{ secrets.R2_ACCESS_KEY_ID }}"
+            "r2_secret_access_key=${{ secrets.R2_SECRET_ACCESS_KEY }}"
+            "r2_cloudflare_api_token=${{ secrets.R2_CLOUDFLARE_API_TOKEN }}"
+            "r2_api_endpoint=${{ secrets.R2_API_ENDPOINT }}"
+            "next_public_r2_static_url=${{ secrets.NEXT_PUBLIC_R2_STATIC_URL }}"
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
