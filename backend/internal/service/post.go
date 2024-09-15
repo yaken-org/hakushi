@@ -35,10 +35,26 @@ func FindPostByID(id int64) (*model.Post, error) {
 	return post, nil
 }
 
-func CreatePost(userAccount model.UserAccount, title string, content string) (*model.Post, error) {
+func FindAPIPostByID(id int64) (*model.APIPost, error) {
+	post, err := FindPostByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	annotations, err := FindAnnotationsByPostID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return post.ToAPIPost(annotations), nil
+}
+
+func CreatePost(userAccount model.UserAccount, imageId int64, title string, content string) (*model.Post, error) {
 	db := database.New()
 
-	res, err := db.Exec("INSERT INTO post (user_account_id, title, content) VALUES (?, ?, ?)", userAccount.ID, title, content)
+	res, err := db.Exec(`
+		INSERT INTO post (user_account_id, image_id, title, content) VALUES (?, ?, ?, ?)
+	`, userAccount.ID, imageId, title, content)
 	if err != nil {
 		return nil, err
 	}

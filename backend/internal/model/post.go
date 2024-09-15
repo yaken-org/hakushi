@@ -28,3 +28,34 @@ func (p *Post) FromRow(row Scannable) error {
 		&p.UpdatedAt,
 	)
 }
+
+type APIPost struct {
+	ID int64 `json:"id"`
+
+	UserAccountID int64 `json:"user_account_id"`
+	ImageID       int64 `json:"image_id"`
+
+	Title   string `json:"title"`
+	Content string `json:"content"`
+
+	Annotations []*Annotation `json:"annotations"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (p *Post) ToAPIPost(annotations []*Annotation) *APIPost {
+	if annotations == nil {
+		annotations = []*Annotation{}
+	}
+	return &APIPost{
+		ID:            p.ID,
+		UserAccountID: p.UserAccountID,
+		ImageID:       p.ImageID,
+		Title:         p.Title,
+		Content:       p.Content,
+		Annotations:   annotations,
+		CreatedAt:     p.CreatedAt,
+		UpdatedAt:     p.UpdatedAt,
+	}
+}
