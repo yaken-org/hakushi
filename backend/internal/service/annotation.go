@@ -5,6 +5,17 @@ import (
 	"github.com/yaken-org/hakushi/internal/model"
 )
 
+func FindAnnotationByID(id int64) (*model.Annotation, error) {
+	db := database.New()
+
+	annotation := new(model.Annotation)
+	if err := model.QueryRow(db.DB, annotation, "SELECT * FROM annotation WHERE id = ?", id); err != nil {
+		return nil, err
+	}
+
+	return annotation, nil
+}
+
 func FindAnnotationsByPostID(postID int64) ([]*model.Annotation, error) {
 	db := database.New()
 
@@ -65,4 +76,22 @@ func FindAnnotationsByPostIDs(postIDs []int64) (map[int64][]*model.Annotation, e
 	}
 
 	return postIDToAnnotations, nil
+}
+
+func CreateAnnotation(post *model.Post, productID int64, DisplayName string, x int64, y int64) (*model.Annotation, error) {
+	db := database.New()
+
+	res, err := db.Exec(`
+		INSERT INTO annotation (post_id, product_id, display_name, x, y) VALUES (?, ?, ?, ?, ?)
+	`, post.ID, productID, DisplayName, x, y)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	return FindAnnotationByID(id)
 }

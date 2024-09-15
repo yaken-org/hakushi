@@ -53,18 +53,35 @@ func GetPost(c echo.Context) error {
 }
 
 func CreatePost(c echo.Context) error {
-	post := new(model.Post)
-	if err := c.Bind(post); err != nil {
-		return err
+	apiPost := new(model.APIPost)
+	if err := c.Bind(apiPost); err != nil {
+		return c.NoContent(http.StatusBadRequest)
 	}
 
+	// アカウント情報を取得する
 	// userAccount := c.Get("user_account").(*model.UserAccount)
 	userAccount := new(model.UserAccount)
 	userAccount.ID = 1
 
-	post, err := service.CreatePost(*userAccount, post.Title, post.Content)
+	// ポストを作成する
+	post, err := service.CreatePost(*userAccount, apiPost.ImageID, apiPost.Title, apiPost.Content)
 	if err != nil {
 		return err
 	}
-	return c.JSON(200, post)
+
+	// ポストに紐づけられた仮のアノテーションを登録する
+	annotations := apiPost.Annotations
+	if annotations == nil {
+		annotations = []*model.Annotation{}
+	}
+	for _, annotation := range annotations {
+		annotation, err = service.CreateAnnotation(post, annotation.ProductID, annotation.DisplayName, annotation.X, annotation.Y)
+		if err != nil {
+			continue
+		}
+		annotations = append(annotations, annotation)
+	}
+
+	// API で通信する形のポストに整形して返す
+	return c.JSON(200, post.ToAPIPost(annotations))
 }
