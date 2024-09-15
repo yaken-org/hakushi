@@ -1,0 +1,39 @@
+package service
+
+import (
+	"log/slog"
+
+	"github.com/yaken-org/hakushi/internal/database"
+	"github.com/yaken-org/hakushi/internal/model"
+)
+
+func FindUserAccountById(id int64) (*model.UserAccount, error) {
+	db := database.New()
+
+	slog.Info("CALL FindUserAccountById")
+	user := new(model.UserAccount)
+	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE id = ?", id); err != nil {
+		slog.Error(err.Error())
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func CreateUserAccount(name string, display_name string, icon_url string, sub string) (*model.UserAccount, error) {
+	db := database.New()
+
+	res, err := db.Exec(`
+		INSERT INTO user_account (name, display_name, icon_url, sub) VALUES(?, ?, ?, ?)
+	`, name, display_name, icon_url, sub)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	return FindUserAccountById(id)
+}
