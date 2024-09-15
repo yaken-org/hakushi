@@ -12,6 +12,7 @@ type Post struct {
 
 	Title   string `json:"title"`
 	Content string `json:"content"`
+	Likes   int    `json:"likes"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -24,6 +25,7 @@ func (p *Post) FromRow(row Scannable) error {
 		&p.ImageID,
 		&p.Title,
 		&p.Content,
+		&p.Likes,
 		&p.CreatedAt,
 		&p.UpdatedAt,
 	)
@@ -37,6 +39,7 @@ type APIPost struct {
 
 	Title   string `json:"title"`
 	Content string `json:"content"`
+	Likes   int    `json:"likes"`
 
 	Annotations []*Annotation `json:"annotations"`
 
@@ -54,6 +57,7 @@ func (p *Post) ToAPIPost(annotations []*Annotation) *APIPost {
 		ImageID:       p.ImageID,
 		Title:         p.Title,
 		Content:       p.Content,
+		Likes:         p.Likes,
 		Annotations:   annotations,
 		CreatedAt:     p.CreatedAt,
 		UpdatedAt:     p.UpdatedAt,
