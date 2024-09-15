@@ -53,3 +53,14 @@ func GetUserAccountBySub(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, account)
 }
+
+func GetUserAccountByName(c echo.Context) error {
+	name := c.Param("name")
+
+	account, err := service.FindUserAccountByName(name)
+	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, account)
+}
