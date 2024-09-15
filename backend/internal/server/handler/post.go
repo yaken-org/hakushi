@@ -14,7 +14,22 @@ func GetAllPosts(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(200, posts)
+	postIDs := make([]int64, len(posts))
+	for i, post := range posts {
+		postIDs[i] = post.ID
+	}
+	postIdToAnnotations, err := service.FindAnnotationsByPostIDs(postIDs)
+	if err != nil {
+		return err
+	}
+
+	var apiPosts []*model.APIPost
+	for _, post := range posts {
+		apiPost := post.ToAPIPost(postIdToAnnotations[post.ID])
+		apiPosts = append(apiPosts, apiPost)
+	}
+
+	return c.JSON(200, apiPosts)
 }
 
 func GetPost(c echo.Context) error {
@@ -27,7 +42,14 @@ func GetPost(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(200, post)
+
+	annotations := make([]*model.Annotation, 0)
+	annotations, err = service.FindAnnotationsByPostID(post.ID)
+	if err != nil {
+		return err
+	}
+	apiPost := post.ToAPIPost(annotations)
+	return c.JSON(200, apiPost)
 }
 
 func CreatePost(c echo.Context) error {
