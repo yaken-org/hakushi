@@ -108,3 +108,28 @@ func UpdatePost(id int64, title string, content string) (*model.Post, error) {
 
 	return FindPostByID(id)
 }
+
+func FindPostRelatedTags(postID int64) ([]*model.Tag, error) {
+	db := database.New()
+
+	res, err := db.Query(`
+		SELECT * FROM tags
+		WHERE id IN (
+			SELECT tag_id FROM post_tag WHERE post_id = ?
+		)
+	`, postID)
+	if err != nil {
+		return nil, err
+	}
+
+	tags := make([]*model.Tag, 0)
+	for res.Next() {
+		tag := new(model.Tag)
+		if err := tag.FromRow(res); err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+
+	return tags, nil
+}
