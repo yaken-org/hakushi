@@ -37,6 +37,9 @@ spec:
       containers:
       - name: hakushi-frontend
         image: ghcr.io/yaken-org/hakushi-frontend:latest
+        envFrom:
+        - configMapRef:
+            name: hakushi-frontend-config
         resources:
           limits:
             memory: "128Mi"
