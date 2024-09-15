@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-    const hello_backend = await fetch(process.env.BACKEND_API_ENDPOINT ?? "http://hakushi-backend.default.svc.cluster.local" + "/health");
+    const backend_url = process.env.BACKEND_API_ENDPOINT ?? "http://hakushi-backend.default.svc.cluster.local";
+    const hello_backend = await fetch(`${backend_url}/health`);
 
     if (hello_backend.ok) {
         const data = await hello_backend.text();
