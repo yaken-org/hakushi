@@ -1,4 +1,3 @@
-import PostSimpleCard from "@/components/post/post_simple_card";
 import PostSimpleCardList from "@/components/post/post_simple_list";
 import { auth } from "@/lib/auth";
 
@@ -13,35 +12,48 @@ export default async function Home() {
                     title: "test",
                     user_account: {
                         id: 12,
-                        name: "test",
+                        name: "nenrin_yearring",
                         created_at: "2021-10-01T00:00:00Z",
                         updated_at: "2021-10-01T00:00:00Z",
-                        display_name: "",
+                        display_name: "年輪",
                         icon_url: "",
                         sub: ""
                     },
                     image_id: 0,
-                    content: "",
-                    created_at: "",
+                    content: "aiueokakikukekosasisusesotatituteto\naaaaaaaa",
+                    created_at: "2024-09-10T00:00:00Z",
                     updated_at: "",
                     annotations: [],
-                    tags: []
+                    tags: [
+                        {
+                            id: 1,
+                            name: "test1",
+                            created_at: "2021-10-01T00:00:00Z",
+                            updated_at: "2021-10-01T00:00:00Z"
+                        },
+                        {
+                            id: 2,
+                            name: "test2",
+                            created_at: "2021-10-01T00:00:00Z",
+                            updated_at: "2021-10-01T00:00:00Z"
+                        }
+                    ]
                 },
                 {
                     id: 2,
                     title: "test2",
                     user_account: {
                         id: 12,
-                        name: "test",
+                        name: "rokuosan",
                         created_at: "2021-10-01T00:00:00Z",
                         updated_at: "2021-10-01T00:00:00Z",
-                        display_name: "",
+                        display_name: "ろくおー",
                         icon_url: "",
                         sub: ""
                     },
                     image_id: 0,
-                    content: "",
-                    created_at: "",
+                    content: "aiueokakikukekosasisusesotatituteto\naaaaaaaa",
+                    created_at: "2024-09-10T00:00:00Z",
                     updated_at: "",
                     annotations: [],
                     tags: []
