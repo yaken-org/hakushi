@@ -72,7 +72,7 @@ export function DrawerDialog({
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-screen overflow-y-scroll sm:max-w-[400px] md:max-w-[600px] lg:max-w-[800px]">
+                <DialogContent className="max-h-screen overflow-y-auto sm:max-w-[400px] md:max-w-[600px] lg:max-w-[800px]">
                     <DialogHeader>
                         <DialogTitle>製品情報を編集</DialogTitle>
                         <DialogDescription>
@@ -87,7 +87,7 @@ export function DrawerDialog({
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerContent className="max-h-screen overflow-y-scroll">
+            <DrawerContent className="max-h-screen overflow-y-auto">
                 <DrawerHeader className="text-left">
                     <DrawerTitle>製品情報を編集</DrawerTitle>
                     <DrawerDescription>
@@ -113,12 +113,12 @@ function AnnotationForm({
     setOpen
 }: {
         className?: string,
-        image?: string,
-        annotations?: {
+        image: string,
+        annotations: {
             x: number, y: number, text: string
         }[],
-        setAnnotations?: React.Dispatch<React.SetStateAction<{ x: number, y: number, text: string }[]>>
-        setOpen?: React.Dispatch<React.SetStateAction<boolean>>
+        setAnnotations: React.Dispatch<React.SetStateAction<{ x: number, y: number, text: string }[]>>
+        setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     const [selectedAnnotation, setSelectedAnnotation] = React.useState<{ x: number, y: number } | null>(null)
 
@@ -153,11 +153,11 @@ function AnnotationForm({
             <div>
                 <Select>
                     <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="追加した点を選択" value={selectedAnnotation ? `${selectedAnnotation.x}, ${selectedAnnotation.y}` : ""} />
+                        <SelectValue placeholder="追加した点を選択" />
                     </SelectTrigger>
                     <SelectContent>
                         {annotations && annotations.map((annotation) => (
-                            <SelectItem key={`${annotation.x},${annotation.y}`} onClick={() => setSelectedAnnotation(annotation)}>
+                            <SelectItem key={`${annotation.x},${annotation.y}`} onClick={() => setSelectedAnnotation(annotation)} value={`${annotation.x},${annotation.y}`}>
                                 {annotation.x}, {annotation.y}
                             </SelectItem>
                         ))}

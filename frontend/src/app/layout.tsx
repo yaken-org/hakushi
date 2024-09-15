@@ -22,7 +22,7 @@ export default function RootLayout({
     return (
         <html lang="ja">
             <body
-                className={`${ibmplexsansjp.className} antialiased`}
+                className={`${ibmplexsansjp.className} antialiased overflow-hidden`}
             >
                 <AuthSessionProvider>
                     {children}
