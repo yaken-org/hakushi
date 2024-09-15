@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `user_account` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
+    `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
 
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS `user_account` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `auth_user` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `user_account_id` bigint NOT NULL,
+    `id` int NOT NULL AUTO_INCREMENT,
+    `user_account_id` int NOT NULL,
 
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS `auth_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `post` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
+    `id` int NOT NULL AUTO_INCREMENT,
 
-    `user_account_id` bigint NOT NULL,
-    `image_id` bigint NOT NULL,
+    `user_account_id` int NOT NULL,
+    `image_id` int NOT NULL,
 
     `title` varchar(255) NOT NULL,
     `content` text NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `post` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `product` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
+    `id` int NOT NULL AUTO_INCREMENT,
 
     `name` varchar(255) NOT NULL,
     `link` text NOT NULL,
@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS `product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `annotation` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
+    `id` int NOT NULL AUTO_INCREMENT,
 
-    `post_id` bigint NOT NULL,
-    `product_id` bigint NOT NULL,
+    `post_id` int NOT NULL,
+    `product_id` int NOT NULL,
 
     `display_name` varchar(255) NOT NULL,
 
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `annotation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tag` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
+    `id` int NOT NULL AUTO_INCREMENT,
 
     `name` varchar(255) NOT NULL UNIQUE,
 
@@ -75,8 +75,8 @@ CREATE TABLE IF NOT EXISTS `tag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `post_tag` (
-    `post_id` bigint NOT NULL,
-    `tag_id` bigint NOT NULL,
+    `post_id` int NOT NULL,
+    `tag_id` int NOT NULL,
 
     PRIMARY KEY (`post_id`, `tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
