@@ -14,6 +14,15 @@ func FindTagByID(id int64) (*model.Tag, error) {
 	return tag, nil
 }
 
+func FindTagByName(name string) (*model.Tag, error) {
+	db := database.New()
+	tag := new(model.Tag)
+	if err := model.QueryRow(db.DB, tag, "SELECT * FROM tag WHERE name = ?", name); err != nil {
+		return nil, err
+	}
+	return tag, nil
+}
+
 func FindAllTags() ([]*model.Tag, error) {
 	db := database.New()
 	rows, err := db.Query("SELECT * FROM tag")
