@@ -1,6 +1,11 @@
 CREATE TABLE IF NOT EXISTS `user_account` (
     `id` int NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) NOT NULL,
+
+    `name` varchar(255) NOT NULL UNIQUE,
+    `display_name` varchar(255) NOT NULL,
+    `icon_url` TEXT NOT NULL,
+
+    `sub` VARCHAR(255) NOT NULL UNIQUE,
 
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -61,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `annotation` (
     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`id`),
-    INDEX `post_id` (`post_id`),
+    INDEX `post_id` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tag` (
