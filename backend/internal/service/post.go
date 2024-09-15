@@ -46,7 +46,12 @@ func FindAPIPostByID(id int64) (*model.APIPost, error) {
 		return nil, err
 	}
 
-	return post.ToAPIPost(annotations), nil
+	tags, err := FindPostRelatedTags(post.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return post.ToAPIPost(annotations, tags), nil
 }
 
 func FindPostsByUserAccountID(userAccountID int64) ([]*model.Post, error) {
@@ -132,6 +137,20 @@ func FindPostRelatedTags(postID int64) ([]*model.Tag, error) {
 	}
 
 	return tags, nil
+}
+
+func FindPostRelatedTagsByPostIDs(postIDs []int64) (map[int64][]*model.Tag, error) {
+	// N+1 が起きているが、無視する
+	postIdToTags := make(map[int64][]*model.Tag)
+	for _, postID := range postIDs {
+		tags, err := FindPostRelatedTags(postID)
+		if err != nil {
+			return nil, err
+		}
+		postIdToTags[postID] = tags
+	}
+
+	return postIdToTags, nil
 }
 
 func FindPostsByTag(tag *model.Tag) ([]*model.Post, error) {

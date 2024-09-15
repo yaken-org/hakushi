@@ -1,6 +1,8 @@
 package service
 
 import (
+	"slices"
+
 	"github.com/yaken-org/hakushi/internal/database"
 	"github.com/yaken-org/hakushi/internal/model"
 )
@@ -56,6 +58,40 @@ func CreateTag(name string) (*model.Tag, error) {
 	}
 
 	return FindTagByID(id)
+}
+
+func CreateTagAndPostTagMapping(postID int64, tags []*model.Tag) ([]*model.Tag, error) {
+	// 既存タグを取得
+	allTags, err := FindAllTags()
+	if err != nil {
+		return nil, err
+	}
+	relatedTags, err := FindPostRelatedTags(postID)
+	if err != nil {
+		return nil, err
+	}
+
+	includeTags := make([]*model.Tag, 0)
+	for _, tag := range tags {
+		// タグが存在しない場合は作成
+		t := tag
+		if !slices.Contains(allTags, tag) {
+			t, err = CreateTag(tag.Name)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// タグとポストのマッピングを作成
+		if !slices.Contains(relatedTags, t) {
+			_, err := CreatePostTag(postID, t.ID)
+			if err != nil {
+				return nil, err
+			}
+		}
+		includeTags = append(includeTags, t)
+	}
+	return includeTags, nil
 }
 
 func DeleteTag(id int64) error {

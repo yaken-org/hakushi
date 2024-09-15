@@ -24,9 +24,14 @@ func GetAllPosts(c echo.Context) error {
 		return err
 	}
 
+	postIdToTags, err := service.FindPostRelatedTagsByPostIDs(postIDs)
+	if err != nil {
+		return err
+	}
+
 	var apiPosts []*model.APIPost
 	for _, post := range posts {
-		apiPost := post.ToAPIPost(postIdToAnnotations[post.ID])
+		apiPost := post.ToAPIPost(postIdToAnnotations[post.ID], postIdToTags[post.ID])
 		apiPosts = append(apiPosts, apiPost)
 	}
 
@@ -49,7 +54,13 @@ func GetPost(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	apiPost := post.ToAPIPost(annotations)
+
+	tags, err := service.FindPostRelatedTags(post.ID)
+	if err != nil {
+		return err
+	}
+
+	apiPost := post.ToAPIPost(annotations, tags)
 	return c.JSON(200, apiPost)
 }
 
@@ -84,8 +95,13 @@ func CreatePost(c echo.Context) error {
 		annotations = append(annotations, annotation)
 	}
 
+	tags, err := service.CreateTagAndPostTagMapping(post.ID, apiPost.Tags)
+	if err != nil {
+		return err
+	}
+
 	// API で通信する形のポストに整形して返す
-	return c.JSON(200, post.ToAPIPost(annotations))
+	return c.JSON(200, post.ToAPIPost(annotations, tags))
 }
 
 // GetUserPosts はユーザのポストを取得するハンドラ
@@ -111,11 +127,16 @@ func GetUserPosts(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	// ポストからタグを取得する
+	postIdToTags, err := service.FindPostRelatedTagsByPostIDs(postIDs)
+	if err != nil {
+		return err
+	}
 
 	// API で通信する形のポストに整形して返す
 	apiPosts := []*model.APIPost{}
 	for _, post := range posts {
-		apiPost := post.ToAPIPost(postIdToAnnotations[post.ID])
+		apiPost := post.ToAPIPost(postIdToAnnotations[post.ID], postIdToTags[post.ID])
 		apiPosts = append(apiPosts, apiPost)
 	}
 
@@ -134,4 +155,22 @@ func GetPostTags(c echo.Context) error {
 	}
 
 	return c.JSON(200, tags)
+}
+
+func CreatePostTag(c echo.Context) error {
+	postID, err := strconv.ParseInt(c.Param("post_id"), 10, 64)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	tagID, err := strconv.ParseInt(c.Param("tag_id"), 10, 64)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	postTag, err := service.CreatePostTag(postID, tagID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(200, postTag)
 }

@@ -42,14 +42,18 @@ type APIPost struct {
 	Likes   int    `json:"likes"`
 
 	Annotations []*Annotation `json:"annotations"`
+	Tags        []*Tag        `json:"tags"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (p *Post) ToAPIPost(annotations []*Annotation) *APIPost {
+func (p *Post) ToAPIPost(annotations []*Annotation, tags []*Tag) *APIPost {
 	if annotations == nil {
 		annotations = []*Annotation{}
+	}
+	if tags == nil {
+		tags = []*Tag{}
 	}
 	return &APIPost{
 		ID:            p.ID,
@@ -59,6 +63,7 @@ func (p *Post) ToAPIPost(annotations []*Annotation) *APIPost {
 		Content:       p.Content,
 		Likes:         p.Likes,
 		Annotations:   annotations,
+		Tags:          tags,
 		CreatedAt:     p.CreatedAt,
 		UpdatedAt:     p.UpdatedAt,
 	}
