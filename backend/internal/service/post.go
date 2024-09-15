@@ -177,3 +177,19 @@ func FindPostsByTag(tag *model.Tag) ([]*model.Post, error) {
 
 	return posts, nil
 }
+
+func IncreamentPostLikeCount(postID int64) (int, error) {
+	db := database.New()
+
+	_, err := db.Exec("UPDATE post SET likes = likes + 1 WHERE id = ?", postID)
+	if err != nil {
+		return 0, err
+	}
+
+	post, err := FindPostByID(postID)
+	if err != nil {
+		return 0, err
+	}
+
+	return post.Likes, nil
+}

@@ -174,3 +174,17 @@ func CreatePostTag(c echo.Context) error {
 
 	return c.JSON(200, postTag)
 }
+
+func SendLikeToPost(c echo.Context) error {
+	postID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	like, err := service.IncreamentPostLikeCount(postID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(200, like)
+}
