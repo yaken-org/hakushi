@@ -6,8 +6,9 @@ export default async function Home() {
     const session = await auth();
     console.log(session);
 
-    const posts = await fetch('/api/backend/post');
-    const data = await posts.json();
+    const backend_url = process.env.BACKEND_API_ENDPOINT ?? "http://hakushi-backend.default.svc.cluster.local/api";
+    const result = await fetch(`${backend_url}/post`);
+    const data = await result.json();
 
     return (
         <div className="pt-4">
