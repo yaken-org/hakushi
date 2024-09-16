@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -14,6 +16,7 @@ func Search(c echo.Context) error {
 			"error": "search word is missing.",
 		})
 	}
+	slog.Info(fmt.Sprintf("search word: %s", searchWord))
 
 	posts, err := service.FindPostByNameRough(searchWord)
 	if err != nil {

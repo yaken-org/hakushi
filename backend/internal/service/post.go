@@ -83,7 +83,7 @@ func FindPostByNameRough(name string) ([]*model.Post, error) {
 	db := database.New()
 
 	name = "%" + name + "%"
-	res, err := db.Query(`SELECT * FROM post WHERE title LIKE `, name)
+	res, err := db.Query(`SELECT * FROM post WHERE title LIKE ?`, name)
 	if err != nil {
 		return nil, err
 	}
