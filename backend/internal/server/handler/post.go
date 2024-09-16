@@ -66,17 +66,20 @@ func GetPost(c echo.Context) error {
 
 // CreatePost はポストを作成するハンドラ
 func CreatePost(c echo.Context) error {
-	apiPost := new(model.APIPost)
+	apiPost := new(model.APIPost2)
 	if err := c.Bind(apiPost); err != nil {
 		slog.Error(err.Error())
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// アカウント情報を取得する
-	userAccountID := apiPost.UserAccountID
+	userAccountID, err := strconv.ParseInt(apiPost.UserAccountID, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
 	account, err := service.FindUserAccountById(userAccountID)
 	if err != nil {
-		return c.NoContent(http.StatusNotFound)
+		return c.JSON(http.StatusNotFound, err)
 	}
 
 	// ポストを作成する

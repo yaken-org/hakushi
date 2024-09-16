@@ -31,6 +31,23 @@ func (p *Post) FromRow(row Scannable) error {
 	)
 }
 
+type APIPost2 struct {
+	ID int64 `json:"id"`
+
+	UserAccountID string `json:"user_account_id"`
+	ImageID       int64  `json:"image_id"`
+
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Likes   int    `json:"likes"`
+
+	Annotations []*Annotation `json:"annotations"`
+	Tags        []*Tag        `json:"tags"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type APIPost struct {
 	ID int64 `json:"id"`
 
