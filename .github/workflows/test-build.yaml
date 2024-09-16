@@ -1,3 +1,4 @@
+
 name: Test Build Container Image
 
 on:
@@ -66,4 +67,3 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-

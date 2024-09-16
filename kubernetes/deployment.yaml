@@ -13,6 +13,7 @@ spec:
     spec:
       containers:
       - name: hakushi-backend
+        imagePullPolicy: Always
         image: ghcr.io/yaken-org/hakushi-backend:latest
         resources:
           limits:
@@ -36,6 +37,7 @@ spec:
     spec:
       containers:
       - name: hakushi-frontend
+        imagePullPolicy: Always
         image: ghcr.io/yaken-org/hakushi-frontend:latest
         envFrom:
         - configMapRef:
