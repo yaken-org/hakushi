@@ -10,10 +10,30 @@ import (
 func FindUserAccountById(id int64) (*model.UserAccount, error) {
 	db := database.New()
 
-	slog.Info("CALL FindUserAccountById")
 	user := new(model.UserAccount)
 	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE id = ?", id); err != nil {
 		slog.Error(err.Error())
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func FindUserAccountByName(name string) (*model.UserAccount, error) {
+	db := database.New()
+
+	user := new(model.UserAccount)
+	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE name = ?", name); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func FindUserAccountBySub(sub string) (*model.UserAccount, error) {
+	db := database.New()
+	user := new(model.UserAccount)
+	if err := model.QueryRow(db.DB, user, "SELECT * FROM user_account WHERE sub = ?", sub); err != nil {
 		return nil, err
 	}
 

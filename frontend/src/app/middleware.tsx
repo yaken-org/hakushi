@@ -5,13 +5,17 @@ export const config = {
 }
 
 export default auth((request) => {
-    const require_registered_page = [
-        "/post/create",
-        "/post/[id]/edit",
-        "/user/[id]/edit",
-    ]
-    if (request.auth && !request.auth.user.data && require_registered_page.includes(request.nextUrl.pathname)) {
+    console.log(request.auth, !request.auth?.user.data, request.nextUrl.pathname !== "/register");
+    if (request.auth && !request.auth.user.data && request.nextUrl.pathname !== "/register") {
+        console.log("redirecting to /register");
         const newURL = new URL("/register", request.nextUrl.origin);
+        return Response.redirect(newURL.toString(), 302);
+    }
+
+    const has_user_data = request.auth && request.auth.user.data;
+    if (has_user_data && request.nextUrl.pathname === "/register") {
+        console.log("redirecting to /");
+        const newURL = new URL("/", request.nextUrl.origin);
         return Response.redirect(newURL.toString(), 302);
     }
 })

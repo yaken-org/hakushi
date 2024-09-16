@@ -12,7 +12,7 @@ import (
 func CreateUserAccount(c echo.Context) error {
 	user := new(model.UserAccount)
 	if err := c.Bind(user); err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return err
 	}
 
 	account, err := service.CreateUserAccount(
@@ -22,7 +22,7 @@ func CreateUserAccount(c echo.Context) error {
 		user.Sub,
 	)
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return err
 	}
 
 	return c.JSON(http.StatusOK, account)
@@ -32,10 +32,32 @@ func GetUserAcocunt(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return err
 	}
 
 	account, err := service.FindUserAccountById(id)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, account)
+}
+
+func GetUserAccountBySub(c echo.Context) error {
+	sub := c.Param("id")
+
+	account, err := service.FindUserAccountBySub(sub)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, account)
+}
+
+func GetUserAccountByName(c echo.Context) error {
+	name := c.Param("name")
+
+	account, err := service.FindUserAccountByName(name)
 	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}

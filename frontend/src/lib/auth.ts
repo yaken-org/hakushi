@@ -1,4 +1,4 @@
-import { get_user_account_data } from "@/lib/get_data_utils";
+import { get_account_data_by_sub } from "@/lib/get_data_utils";
 import NextAuth from "next-auth";
 import google from "next-auth/providers/google";
 
@@ -15,24 +15,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         maxAge: 7 * 24 * 60 * 60,
         updateAge: 24 * 60 * 60,
     },
-
+    trustHost: true,
     callbacks: {
-        jwt: async ({ token, user, account, profile, trigger, }) => {
-            token.account = account ? account : token.account;
-            token.user = user ? user : token.user;
-            token.profile = profile ? profile : token.profile;
+        jwt: async ({ token, user, account, trigger }) => {
+            token.user = user ? {
+                ...user,
+                providerAccountId: account?.providerAccountId,
+            } : token.user;
             token.trigger = trigger ? trigger : token.trigger;
             return token;
         },
         session: async ({ session, token }) => {
-            const user_account_data = await get_user_account_data((token.profile as { sub: string }).sub ?? "");
+            const providerAccountId = (token.user as { providerAccountId: string }).providerAccountId;
+            const user_account_data = await get_account_data_by_sub(providerAccountId);
+            console.log(user_account_data);
 
             session.user = {
                 ...session.user,
-                account: token.account,
-                profile: token.profile,
+                providerAccountId,
                 trigger: token.trigger,
-                data: user_account_data.is_success ? user_account_data.data : null,
+                data: user_account_data.status_code === 200 ? user_account_data.data : null,
             };
 
             return session;
