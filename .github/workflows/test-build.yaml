@@ -44,7 +44,7 @@ jobs:
 
       - name: Overwrite Manifest Build Tag
         run: |
-          sed -i "s/\[% BUILDTAG_BACKEND %\]/${{ steps.meta.outputs.tags }}/g" kubernetes/deployment.yaml
+          sed -i '' "s|[% BUILDTAG_BACKEND %]|${{ steps.meta.outputs.tags }}|g" kubernetes/deployment.yaml
 
       - name: Cat Manifest
         run: cat kubernetes/deployment.yaml
