@@ -23,4 +23,6 @@ func (s *Server) configureRoute() {
 	api.GET("/tag/:id/posts", handler.GetTaggedPosts) // タグがついた投稿一覧取得
 
 	api.GET("/ranking", handler.GetRanking) // ランキング取得
+
+	api.GET("/search", handler.Search) // 検索
 }
