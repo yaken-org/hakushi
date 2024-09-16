@@ -20,6 +20,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/yaken-org/hakushi-backend
+          tags: |
+            type=semver,pattern={{version}}
+            type=sha,format=long
+            type=schedule,pattern={{date 'YYYYMMDD-hhmmss'}}
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -27,7 +38,7 @@ jobs:
           file: ./docker/production/backend/Dockerfile
           platforms: linux/amd64
           push: false
-          tags: ghcr.io/yaken-org/hakushi-backend:latest
+          tags: ${{ steps.meta.outputs.tags }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
