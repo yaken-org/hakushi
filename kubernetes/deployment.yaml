@@ -14,7 +14,7 @@ spec:
       containers:
       - name: hakushi-backend
         imagePullPolicy: Always
-        image: ghcr.io/yaken-org/hakushi-backend:[% BUILDTAG_BACKEND %]
+        image: ghcr.io/yaken-org/hakushi-backend:latest
         resources:
           limits:
             memory: "128Mi"
