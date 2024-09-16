@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { Settings, User } from "lucide-react"
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import SignInButton from "../auth/signInButton";
 import Image from "next/image";
 import { Popover, PopoverTrigger } from "../ui/popover";
