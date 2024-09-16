@@ -79,6 +79,27 @@ func FindAPIPostByID(id int64) (*model.APIPost, error) {
 	return post.ToAPIPost(annotations, tags), nil
 }
 
+func FindPostByNameRough(name string) ([]*model.Post, error) {
+	db := database.New()
+
+	name = "%" + name + "%"
+	res, err := db.Query(`SELECT * FROM post WHERE title LIKE `, name)
+	if err != nil {
+		return nil, err
+	}
+
+	posts := make([]*model.Post, 0)
+	for res.Next() {
+		post := new(model.Post)
+		if err := post.FromRow(res); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func FindPostsByUserAccountID(userAccountID int64) ([]*model.Post, error) {
 	db := database.New()
 
