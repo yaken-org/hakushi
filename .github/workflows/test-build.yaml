@@ -42,6 +42,13 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
 
+      - name: Overwrite Manifest Build Tag
+        run: |
+          sed -i "s/\[% BUILDTAG_BACKEND %\]/${{ steps.meta.outputs.tags }}/g" kubernetes/deployment.yaml
+
+      - name: Cat Manifest
+        run: cat kubernetes/deployment.yaml
+
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
