@@ -3,7 +3,7 @@ import { API_Post } from "@/types/api/post";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function PostSimpleCard({
+export default function PostDetailCard({
     post
 }: {
     post: API_Post;

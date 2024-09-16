@@ -1,4 +1,7 @@
-export default function PostDetailPage({
+import PostDetailCard from "@/components/post/post_detail_card";
+import { API_Post } from "@/types/api/post";
+
+export default async function PostDetailPage({
     params: {
         post_id
     }
@@ -6,11 +9,15 @@ export default function PostDetailPage({
     params: {
         post_id: string;
     };
-}) {
+    }) {
+    const post = await fetch('/api/backend/post/' + post_id);
+    if (!post.ok) {
+        return <div>Post not found</div>
+    }
+    
     return (
         <div>
-            <h1>Post Detail</h1>
-            <p>Post ID: {post_id}</p>
+            <PostDetailCard post={post as unknown as API_Post} />
         </div>
     )
 }
