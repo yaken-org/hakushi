@@ -1,6 +1,13 @@
 package server
 
-import "github.com/yaken-org/hakushi/internal/server/handler"
+import (
+	gqlHandler "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/labstack/echo/v4"
+	"github.com/yaken-org/hakushi/graph"
+	"github.com/yaken-org/hakushi/internal/database"
+	"github.com/yaken-org/hakushi/internal/server/handler"
+)
 
 func (s *Server) configureRoute() {
 	e := s.Engine
@@ -27,4 +34,27 @@ func (s *Server) configureRoute() {
 	api.GET("/ranking", handler.GetRanking) // ランキング取得
 
 	api.GET("/search", handler.Search) // 検索
+
+	graphQL(e)
+	graphiql(e)
+}
+
+func graphQL(e *echo.Echo) {
+	db := database.New()
+
+	gql := gqlHandler.NewDefaultServer(
+		graph.NewExecutableSchema(
+			graph.Config{
+				Resolvers: &graph.Resolver{
+					DB: db.Gorm,
+				},
+			},
+		),
+	)
+	e.POST("/graph/query", echo.WrapHandler(gql))
+}
+
+func graphiql(e *echo.Echo) {
+	h := playground.Handler("GraphQL playground", "/graph/query")
+	e.GET("/debug/graphiql", echo.WrapHandler(h))
 }
