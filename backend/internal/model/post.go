@@ -31,6 +31,10 @@ func (p *Post) FromRow(row Scannable) error {
 	)
 }
 
+func (p *Post) TableName() string {
+	return "post"
+}
+
 type APIPost2 struct {
 	ID int64 `json:"id"`
 

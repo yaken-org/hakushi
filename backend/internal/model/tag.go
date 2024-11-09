@@ -19,3 +19,7 @@ func (t *Tag) FromRow(row Scannable) error {
 		&t.UpdatedAt,
 	)
 }
+
+func (t *Tag) TableName() string {
+	return "tag"
+}

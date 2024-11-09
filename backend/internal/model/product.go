@@ -23,3 +23,7 @@ func (p *Product) FromRow(row Scannable) error {
 		&p.UpdatedAt,
 	)
 }
+
+func (p *Product) TableName() string {
+	return "product"
+}

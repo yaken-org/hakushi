@@ -29,3 +29,7 @@ func (a *Annotation) FromRow(row Scannable) error {
 		&a.UpdatedAt,
 	)
 }
+
+func (a *Annotation) TableName() string {
+	return "annotation"
+}

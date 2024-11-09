@@ -31,3 +31,7 @@ func (u *UserAccount) FromRow(row Scannable) error {
 		&u.UpdatedAt,
 	)
 }
+
+func (u *UserAccount) TableName() string {
+	return "user_account"
+}
