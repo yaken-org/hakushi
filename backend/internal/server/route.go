@@ -9,7 +9,7 @@ func (s *Server) configureRoute() {
 
 	api := e.Group("/api")
 	api.POST("/account", handler.CreateUserAccount)              // アカウント作成
-	api.GET("/account/:id", handler.GetUserAcocunt)              // アカウントの詳細取得
+	api.GET("/account/:id", handler.GetUserAccount)              // アカウントの詳細取得
 	api.GET("/account/:id/posts", handler.GetUserPosts)          // アカウントの投稿一覧取得
 	api.GET("/account/sub/:id", handler.GetUserAccountBySub)     // subからアカウント取得
 	api.GET("/account/name/:name", handler.GetUserAccountByName) // nameからアカウント取得

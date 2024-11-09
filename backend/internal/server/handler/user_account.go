@@ -28,7 +28,7 @@ func CreateUserAccount(c echo.Context) error {
 	return c.JSON(http.StatusOK, account)
 }
 
-func GetUserAcocunt(c echo.Context) error {
+func GetUserAccount(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
