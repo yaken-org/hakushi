@@ -21,14 +21,20 @@ func main() {
 	}
 
 	slog.Debug("Loading configuration")
-	config := config.New(e)
+	c := config.New(e)
 
 	slog.Debug("Initializing database")
-	database.Initialize(config)
+	if err := database.Initialize(c); err != nil {
+		panic(err)
+	}
 
 	slog.Debug("Initializing server")
-	server.Initialize(config)
+	if err := server.Initialize(c); err != nil {
+		panic(err)
+	}
 
 	slog.Info("Starting server")
-	server.Get().Start()
+	if err := server.Get().Start(); err != nil {
+		panic(err)
+	}
 }
