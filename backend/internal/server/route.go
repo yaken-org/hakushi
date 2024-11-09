@@ -36,7 +36,9 @@ func (s *Server) configureRoute() {
 	api.GET("/search", handler.Search) // 検索
 
 	graphQL(e)
-	graphiql(e)
+	if s.Config.Environment.Name() == "development" {
+		graphiql(e)
+	}
 }
 
 func graphQL(e *echo.Echo) {
