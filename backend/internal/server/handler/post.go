@@ -184,7 +184,7 @@ func SendLikeToPost(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	like, err := service.IncreamentPostLikeCount(postID)
+	like, err := service.IncrementPostLikeCount(postID)
 	if err != nil {
 		return err
 	}

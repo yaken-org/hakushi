@@ -5,58 +5,47 @@ import (
 	"github.com/yaken-org/hakushi/internal/model"
 )
 
+// FindAllPosts は全ての Post を取得します。
 func FindAllPosts() ([]*model.Post, error) {
 	db := database.New()
+	var posts []*model.Post
 
-	res, err := db.Query("SELECT * FROM post")
-	if err != nil {
-		return nil, err
-	}
-
-	posts := make([]*model.Post, 0)
-	for res.Next() {
-		post := new(model.Post)
-		if err := post.FromRow(res); err != nil {
-			return nil, err
-		}
-		posts = append(posts, post)
+	result := db.Gorm.Find(&posts)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return posts, nil
 }
 
+// FindPostsOrderByLikes はいいねの数が多い順に Post を取得します。
+// いいねの数が 0 の Post は取得されません。
 func FindPostsOrderByLikes() ([]*model.Post, error) {
 	db := database.New()
 
-	res, err := db.Query(`
-		SELECT *
-		FROM post
-		WHERE likes > 0
-		ORDER BY likes DESC
-	`)
-	if err != nil {
-		return nil, err
-	}
-
-	posts := make([]*model.Post, 0)
-	for res.Next() {
-		post := new(model.Post)
-		if err := post.FromRow(res); err != nil {
-			return nil, err
-		}
-		posts = append(posts, post)
+	var posts []*model.Post
+	result := db.Gorm.Where("likes > 0").Order("likes desc").Find(&posts)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return posts, nil
 }
 
+// FindPostByID は ID から Post を取得します。
+// Post が見つからなかった場合は nil を返します。
 func FindPostByID(id int64) (*model.Post, error) {
 	db := database.New()
 
 	post := new(model.Post)
-	if err := model.QueryRow(db.DB, post, "SELECT * FROM post WHERE id = ?", id); err != nil {
-		return nil, err
+	result := db.Gorm.Find(post, id)
+	if result.Error != nil {
+		return nil, result.Error
 	}
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+
 	return post, nil
 }
 
@@ -79,71 +68,63 @@ func FindAPIPostByID(id int64) (*model.APIPost, error) {
 	return post.ToAPIPost(annotations, tags), nil
 }
 
+// FindPostByNameRough はタイトルに name を含む Post を取得します。
+// name は部分一致で検索されます。
 func FindPostByNameRough(name string) ([]*model.Post, error) {
 	db := database.New()
 
 	name = "%" + name + "%"
-	res, err := db.Query(`SELECT * FROM post WHERE title LIKE ?`, name)
-	if err != nil {
-		return nil, err
-	}
-
-	posts := make([]*model.Post, 0)
-	for res.Next() {
-		post := new(model.Post)
-		if err := post.FromRow(res); err != nil {
-			return nil, err
-		}
-		posts = append(posts, post)
+	var posts []*model.Post
+	result := db.Gorm.Where("title LIKE ?", name).Find(&posts)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return posts, nil
 }
 
+// FindPostsByUserAccountID は UserAccountID から Post を取得します。
+// Post は作成日時の降順で取得されます。
 func FindPostsByUserAccountID(userAccountID int64) ([]*model.Post, error) {
 	db := database.New()
 
-	res, err := db.Query("SELECT * FROM post WHERE user_account_id = ?", userAccountID)
-	if err != nil {
-		return nil, err
-	}
-
-	posts := make([]*model.Post, 0)
-	for res.Next() {
-		post := new(model.Post)
-		if err := post.FromRow(res); err != nil {
-			return nil, err
-		}
-		posts = append(posts, post)
+	var posts []*model.Post
+	result := db.Gorm.
+		Where("user_account_id = ?", userAccountID).
+		Order("created_at desc").
+		Find(&posts)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return posts, nil
 }
 
+// CreatePost は Post を作成します。
 func CreatePost(userAccount model.UserAccount, imageId int64, title string, content string) (*model.Post, error) {
 	db := database.New()
 
-	res, err := db.Exec(`
-		INSERT INTO post (user_account_id, image_id, title, content) VALUES (?, ?, ?, ?)
-	`, userAccount.ID, imageId, title, content)
-	if err != nil {
-		return nil, err
+	post := &model.Post{
+		UserAccountID: userAccount.ID,
+		ImageID:       imageId,
+		Title:         title,
+		Content:       content,
 	}
 
-	id, err := res.LastInsertId()
-	if err != nil {
-		return nil, err
+	result := db.Gorm.Create(post)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	return FindPostByID(id)
+	return post, nil
 }
 
-func DeletePost(id int64) error {
+func DeletePostById(id int64) error {
 	db := database.New()
 
-	_, err := db.Exec("DELETE FROM post WHERE id = ?", id)
-	if err != nil {
-		return err
+	result := db.Gorm.Delete(&model.Post{}, id)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
@@ -152,84 +133,111 @@ func DeletePost(id int64) error {
 func UpdatePost(id int64, title string, content string) (*model.Post, error) {
 	db := database.New()
 
-	_, err := db.Exec("UPDATE post SET title = ?, content = ? WHERE id = ?", title, content, id)
-	if err != nil {
-		return nil, err
+	post := new(model.Post)
+	result := db.Gorm.Model(post).Where("id = ?", id).Updates(map[string]interface{}{
+		"title":   title,
+		"content": content,
+	})
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return FindPostByID(id)
 }
 
+// FindPostRelatedTags は Post に関連する Tag を取得します。
 func FindPostRelatedTags(postID int64) ([]*model.Tag, error) {
 	db := database.New()
 
-	res, err := db.Query(`
-		SELECT * FROM tag
-		WHERE id IN (
-			SELECT tag_id FROM post_tag WHERE post_id = ?
-		)
-	`, postID)
-	if err != nil {
-		return nil, err
+	// PostID に関連する TagID を取得
+	var postTags []*model.PostTag
+	if result := db.Gorm.Where("post_id = ?", postID).Find(&postTags); result.Error != nil {
+		return nil, result.Error
+	}
+	var tagIDs []int64
+	for _, postTag := range postTags {
+		tagIDs = append(tagIDs, postTag.TagID)
 	}
 
-	tags := make([]*model.Tag, 0)
-	for res.Next() {
-		tag := new(model.Tag)
-		if err := tag.FromRow(res); err != nil {
-			return nil, err
-		}
-		tags = append(tags, tag)
+	// TagID から Tag を取得
+	var tags []*model.Tag
+	if result := db.Gorm.Where("id IN (?)", tagIDs).Find(&tags); result.Error != nil {
+		return nil, result.Error
 	}
 
 	return tags, nil
 }
 
+// FindPostRelatedTagsByPostIDs は Post に関連する Tag を取得します。
+// Post to Tags のマップを返します。
 func FindPostRelatedTagsByPostIDs(postIDs []int64) (map[int64][]*model.Tag, error) {
-	// N+1 が起きているが、無視する
-	postIdToTags := make(map[int64][]*model.Tag)
-	for _, postID := range postIDs {
-		tags, err := FindPostRelatedTags(postID)
-		if err != nil {
-			return nil, err
-		}
-		postIdToTags[postID] = tags
+	db := database.New()
+
+	// 複数の PostID から PostTag を取得
+	var postTags []*model.PostTag
+	if result := db.Gorm.Where("post_id IN (?)", postIDs).Find(&postTags); result.Error != nil {
+		return nil, result.Error
 	}
 
-	return postIdToTags, nil
+	// PostTag から TagID だけのスライスを作成
+	var tagIDs []int64
+	for _, postTag := range postTags {
+		tagIDs = append(tagIDs, postTag.TagID)
+	}
+	// TagID から Tag を取得
+	var tags []*model.Tag
+	if result := db.Gorm.Where("id IN (?)", tagIDs).Find(&tags); result.Error != nil {
+		return nil, result.Error
+	}
+	// TagID to Tag のマップを作成
+	tagIDToTag := make(map[int64]*model.Tag)
+	for _, tag := range tags {
+		tagIDToTag[tag.ID] = tag
+	}
+
+	// PostID to Tags のマップを作成
+	postIDToTags := make(map[int64][]*model.Tag)
+	for _, postTag := range postTags {
+		tag, ok := tagIDToTag[postTag.TagID]
+		if !ok {
+			continue
+		}
+		postIDToTags[postTag.PostID] = append(postIDToTags[postTag.PostID], tag)
+	}
+
+	return postIDToTags, nil
 }
 
+// FindPostsByTag は Tag から Post を取得します。
 func FindPostsByTag(tag *model.Tag) ([]*model.Post, error) {
 	db := database.New()
 
-	res, err := db.Query(`
-		SELECT * FROM post
-		WHERE id IN (
-			SELECT post_id FROM post_tag WHERE tag_id = ?
-		)
-	`, tag.ID)
-	if err != nil {
-		return nil, err
+	var postTags []*model.PostTag
+	if result := db.Gorm.Where("tag_id = ?", tag.ID).Find(&postTags); result.Error != nil {
+		return nil, result.Error
 	}
 
-	posts := make([]*model.Post, 0)
-	for res.Next() {
-		post := new(model.Post)
-		if err := post.FromRow(res); err != nil {
-			return nil, err
-		}
-		posts = append(posts, post)
+	var postIDs []int64
+	for _, postTag := range postTags {
+		postIDs = append(postIDs, postTag.PostID)
+	}
+
+	var posts []*model.Post
+	if result := db.Gorm.Where("id IN (?)", postIDs).Find(&posts); result.Error != nil {
+		return nil, result.Error
 	}
 
 	return posts, nil
 }
 
-func IncreamentPostLikeCount(postID int64) (int, error) {
+// IncrementPostLikeCount は Post のいいね数をインクリメントします。
+func IncrementPostLikeCount(postID int64) (int, error) {
 	db := database.New()
+	post := new(model.Post)
 
-	_, err := db.Exec("UPDATE post SET likes = likes + 1 WHERE id = ?", postID)
-	if err != nil {
-		return 0, err
+	result := db.Gorm.Model(post).Where("id = ?", postID).Update("likes", post.Likes+1)
+	if result.Error != nil {
+		return 0, result.Error
 	}
 
 	post, err := FindPostByID(postID)
