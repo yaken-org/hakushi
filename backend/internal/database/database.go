@@ -2,14 +2,17 @@ package database
 
 import (
 	"database/sql"
+	"gorm.io/gorm"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/yaken-org/hakushi/internal/config"
+	gormMySQL "gorm.io/driver/mysql"
 )
 
 type Database struct {
 	*sql.DB
+	Gorm *gorm.DB
 }
 
 var db *Database
@@ -52,6 +55,16 @@ func Initialize(config *config.Config) error {
 	database.SetMaxOpenConns(config.Database.MaxOpenConns)
 	database.SetConnMaxLifetime(time.Duration(config.Database.ConnMaxLifetime) * time.Second)
 
-	db = &Database{database}
+	var gormDB *gorm.DB
+	if gormDB, err = gorm.Open(gormMySQL.New(gormMySQL.Config{
+		Conn: database,
+	}), &gorm.Config{}); err != nil {
+		panic(err)
+	}
+
+	db = &Database{
+		DB:   database,
+		Gorm: gormDB,
+	}
 	return nil
 }
