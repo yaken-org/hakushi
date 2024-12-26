@@ -21,10 +21,10 @@ services:
 
   app:
     build:
-      context: ../../backend
+      context: ../../app
       dockerfile: ../docker/local/backend/Dockerfile
     volumes:
-      - ../../backend:/app/
+      - ../../app:/app/
     expose:
       - "80"
     labels:
@@ -35,8 +35,8 @@ services:
   db:
     image: mariadb:10.5
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: hakushi
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
     volumes:
       - ../../tmp/db:/var/lib/mysql
     ports:
