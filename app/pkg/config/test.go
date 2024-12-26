@@ -3,10 +3,10 @@ package config
 var test = Config{
 	Database: DatabaseConfig{
 		User:                 "root",
-		Password:             "root",
-		Host:                 "db",
+		Password:             "",
+		Host:                 "127.0.0.1",
 		Port:                 "3306",
-		Database:             "hakushi",
+		Database:             "hakushi_test",
 		TimeZone:             "Asia/Tokyo",
 		AllowNativePasswords: true,
 		ParseTime:            true,
