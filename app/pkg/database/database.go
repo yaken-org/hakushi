@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+
 	"github.com/yaken-org/hakushi/pkg/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

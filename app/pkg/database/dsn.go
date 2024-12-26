@@ -1,9 +1,10 @@
 package database
 
 import (
+	"time"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/yaken-org/hakushi/pkg/config"
-	"time"
 )
 
 // dsn はデータベース接続情報を返す

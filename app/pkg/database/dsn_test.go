@@ -1,8 +1,9 @@
 package database
 
 import (
-	"github.com/yaken-org/hakushi/pkg/config"
 	"testing"
+
+	"github.com/yaken-org/hakushi/pkg/config"
 )
 
 func Test_dsn(t *testing.T) {
