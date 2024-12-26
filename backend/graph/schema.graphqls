@@ -1,0 +1,78 @@
+scalar URL
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type User {
+  id: ID!
+
+  name: String!
+  displayName: String!
+  iconURL: URL!
+
+  email: String!
+}
+
+type Post {
+  id: ID!
+
+  imageId: String!
+  title: String!
+  Content: String!
+
+}
+
+type Tag {
+  id: ID!
+  name: String!
+}
+
+#########################
+### Edge & Connection ###
+#########################
+
+type PostEdge {
+    cursor: String!
+    node: Post
+}
+type PostConnection {
+    edges: [PostEdge]
+    nodes: [Post!]!
+    pageInfo: PageInfo!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User
+}
+type UserConnection {
+  edges: [UserEdge]
+  nodes: [User!]!
+  pageInfo: PageInfo!
+}
+
+
+##################
+### Query Type ###
+##################
+type Query {
+  posts(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): PostConnection!
+}
+
+
+
+#####################
+### Mutation Type ###
+#####################
+type Mutation {
+  createPost: Post!
+}
