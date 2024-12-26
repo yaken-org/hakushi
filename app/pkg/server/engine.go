@@ -9,7 +9,7 @@ type HandlerFunc func(c Context) error
 
 func wrap(f HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx := newContext(c)
+		ctx := NewContext(c)
 		return f(ctx)
 	}
 }

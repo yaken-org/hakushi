@@ -10,6 +10,6 @@ type Context struct {
 	DB *database.Database
 }
 
-func newContext(c echo.Context) Context {
+func NewContext(c echo.Context) Context {
 	return Context{c, database.New()}
 }
