@@ -17,11 +17,11 @@ func wrap(f HandlerFunc) echo.HandlerFunc {
 type Engine interface {
 	Add(method, path string, handler HandlerFunc, middleware ...echo.MiddlewareFunc) *echo.Route
 	Start(address string) error
-	Core() *echo.Echo
+	Echo() *echo.Echo
 }
 
 type engine struct {
-	*echo.Echo
+	echo *echo.Echo
 }
 
 func New() Engine {
@@ -30,17 +30,17 @@ func New() Engine {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	return &engine{e}
+	return &engine{echo: e}
 }
 
-func (e *engine) Core() *echo.Echo {
-	return e.Echo
+func (e *engine) Echo() *echo.Echo {
+	return e.echo
 }
 
 func (e *engine) Start(address string) error {
-	return e.Echo.Start(address)
+	return e.echo.Start(address)
 }
 
 func (e *engine) Add(method, path string, handler HandlerFunc, middleware ...echo.MiddlewareFunc) *echo.Route {
-	return e.Echo.Add(method, path, wrap(handler), middleware...)
+	return e.echo.Add(method, path, wrap(handler), middleware...)
 }

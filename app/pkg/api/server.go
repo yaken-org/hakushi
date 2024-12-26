@@ -12,7 +12,7 @@ func Start() {
 		s.Add(r.method, r.path, r.handler)
 	}
 	c := config.Get()
-	s.Core().Logger.Fatal(s.Start(c.Server.Host + ":" + c.Server.Port))
+	s.Echo().Logger.Fatal(s.Start(c.Server.Host + ":" + c.Server.Port))
 }
 
 var routes = []struct {
