@@ -1,4 +1,4 @@
-package handler
+package healthcheck
 
 import "github.com/yaken-org/hakushi/pkg/server"
 
