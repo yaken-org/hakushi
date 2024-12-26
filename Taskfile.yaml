@@ -7,6 +7,11 @@ tasks:
     cmds:
       - "task -a"
 
+  compose:
+    desc: Docker Composeのコマンドを実行します。
+    cmds:
+      - "docker compose -f ./docker/local/compose.yaml {{ .CLI_ARGS }}"
+
   up:
     desc: ローカル開発環境を立ち上げます。
     cmds:
@@ -19,6 +24,16 @@ tasks:
     desc: ローカル開発環境を削除します。
     cmds:
       - "docker compose -f ./docker/local/compose.yaml down"
+
+  test:
+    desc: Goテストを実行します。
+    vars:
+      FILE: '{{ default "./..." .FILE }}'
+    env:
+      APP_ENV: test
+    dir: app
+    cmds:
+      - "go test -v {{ .FILE }}"
 
   build:
     desc: コンテナイメージのビルドを実行します。
