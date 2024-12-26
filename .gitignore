@@ -142,3 +142,4 @@ next-env.d.ts
 *.pem
 
 **/tmp/**
+.idea
