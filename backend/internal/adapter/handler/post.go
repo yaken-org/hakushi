@@ -9,10 +9,10 @@ import (
 )
 
 type PostHandler struct {
-	postUsecase *usecase.PostUsecase
+	postUsecase usecase.PostUsecaseInterface
 }
 
-func NewPostHandler(postUsecase *usecase.PostUsecase) *PostHandler {
+func NewPostHandler(postUsecase usecase.PostUsecaseInterface) *PostHandler {
 	return &PostHandler{
 		postUsecase: postUsecase,
 	}

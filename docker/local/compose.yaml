@@ -2,22 +2,22 @@ volumes:
   node_modules:
 
 services:
-  traefik:
-    image: traefik:v3.0
-    ports:
-      - "80:80"
-      - "8082:8082"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../../config/traefik:/etc/traefik
-      - ../../tmp/traefik/logs:/logs
-    environment:
-      TZ: Asia/Tokyo
-    labels:
-      traefik.enable: true
-      traefik.http.routers.dashboard.rule: Host(`traefik.local.yaken.org`)
-      traefik.http.routers.dashboard.entrypoints: http
-      traefik.http.routers.dashboard.service: api@internal
+  # traefik:
+  #   image: traefik:v3.0
+  #   ports:
+  #     - "80:80"
+  #     - "8082:8082"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ../../config/traefik:/etc/traefik
+  #     - ../../tmp/traefik/logs:/logs
+  #   environment:
+  #     TZ: Asia/Tokyo
+  #   labels:
+  #     traefik.enable: true
+  #     traefik.http.routers.dashboard.rule: Host(`traefik.local.yaken.org`)
+  #     traefik.http.routers.dashboard.entrypoints: http
+  #     traefik.http.routers.dashboard.service: api@internal
 
   app:
     build:
@@ -25,10 +25,10 @@ services:
       dockerfile: ../docker/local/backend/Dockerfile
     volumes:
       - ../../backend:/app/
-    expose:
-      - "80"
+    ports:
+      - "8080:80"
     labels:
-      traefik.enable: true
+      # traefik.enable: true
       traefik.http.routers.app.rule: Host(`api.local.hakushi.yaken.org`)
       traefik.http.routers.app.entrypoints: http
 
