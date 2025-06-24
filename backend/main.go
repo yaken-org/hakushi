@@ -13,10 +13,14 @@ func main() {
 	slog.Info("Starting Hakushi")
 
 	var e config.Environment
-	if os.Getenv("APP_ENV") == "production" {
+	switch os.Getenv("APP_ENV") {
+	case "production":
 		slog.Info("Environment: Production")
 		e = config.Production()
-	} else {
+	case "test":
+		slog.Info("Environment: Test")
+		e = config.Test()
+	default:
 		slog.Info("Environment: Development")
 		e = config.Development()
 	}

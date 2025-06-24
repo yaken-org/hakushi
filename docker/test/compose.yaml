@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  test-db:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: hakushi_test
+      MYSQL_USER: hakushi
+      MYSQL_PASSWORD: hakushi
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      interval: 5s
+    volumes:
+      - test-db-data:/var/lib/mysql
+
+  backend-test:
+    build:
+      context: ../../backend
+      dockerfile: ../docker/test/backend/Dockerfile
+    depends_on:
+      test-db:
+        condition: service_healthy
+    environment:
+      APP_ENV: test
+      DB_HOST: test-db
+      DB_PORT: 3306
+      DB_USER: hakushi
+      DB_PASSWORD: hakushi
+      DB_NAME: hakushi_test
+    command: |
+      sh -c "
+        echo 'Waiting for database...'
+        sleep 5
+        echo 'Running migrations...'
+        migrate -path /db/migrations -database 'mysql://hakushi:hakushi@test-db:3306/hakushi_test' up
+        echo 'Running tests...'
+        go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+      "
+    volumes:
+      - ../../backend:/app
+      - ../../db/migrations:/db/migrations
+
+volumes:
+  test-db-data:

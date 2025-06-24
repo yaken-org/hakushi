@@ -63,3 +63,22 @@ func (e *EnvironmentDevelopment) filepath() string {
 func (e *EnvironmentDevelopment) reader() io.Reader {
 	return file(e)
 }
+
+// Test はテスト環境を表す Environment を返す。
+func Test() Environment {
+	return new(EnvironmentTest)
+}
+
+type EnvironmentTest struct{}
+
+func (e *EnvironmentTest) Name() string {
+	return "test"
+}
+
+func (e *EnvironmentTest) filepath() string {
+	return path(e)
+}
+
+func (e *EnvironmentTest) reader() io.Reader {
+	return file(e)
+}
