@@ -1,0 +1,147 @@
+name: Backend Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-test.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-test.yml'
+
+jobs:
+  test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: hakushi_test
+          MYSQL_USER: hakushi
+          MYSQL_PASSWORD: hakushi
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23.1'
+        cache-dependency-path: backend/go.sum
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Install migrate tool
+      run: |
+        curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+        sudo mv migrate /usr/local/bin/
+
+    - name: Wait for MariaDB
+      run: |
+        for i in {1..30}; do
+          if mysql -h127.0.0.1 -uhakushi -phakushi -e "SELECT 1" &>/dev/null; then
+            echo "MariaDB is ready"
+            break
+          fi
+          echo "Waiting for MariaDB... ($i/30)"
+          sleep 2
+        done
+
+    - name: Run migrations
+      env:
+        DATABASE_URL: mysql://hakushi:hakushi@localhost:3306/hakushi_test
+      run: |
+        migrate -path ../db/migrations -database "$DATABASE_URL" up
+
+    - name: Run tests with coverage
+      env:
+        APP_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 3306
+        DB_USER: hakushi
+        DB_PASSWORD: hakushi
+        DB_NAME: hakushi_test
+      run: |
+        go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        echo "Coverage report:"
+        go tool cover -func=coverage.out
+
+  lint:
+    name: Lint Backend
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23.1'
+        cache-dependency-path: backend/go.sum
+
+    - name: Install golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+        working-directory: backend
+
+    - name: Run go fmt
+      run: |
+        if [ "$(gofmt -s -l . | grep -v wire_gen.go | wc -l)" -gt 0 ]; then
+          echo "Go files are not formatted. Please run 'go fmt ./...'"
+          gofmt -s -d . | grep -v wire_gen.go
+          exit 1
+        fi
+
+    - name: Run go vet
+      run: go vet ./...
+
+  build:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23.1'
+        cache-dependency-path: backend/go.sum
+
+    - name: Build
+      run: |
+        go build -v -o hakushi .
+        
+    - name: Test binary
+      run: |
+        ./hakushi -version || true
